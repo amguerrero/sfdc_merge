@@ -1,0 +1,52 @@
+{
+	"applicationVisibilities" : {
+		"uniqueKeys" : [ "application" ],
+		"equalKeys"  : [ "application", "default", "visible" ]
+	},
+	"classAccesses" : {
+		"uniqueKeys" : [ "apexClass" ],
+		"equalKeys"  : [ "apexClass", "enabled" ]
+	},
+	"externalDataSourceAccesses" : {
+		"uniqueKeys" : [ "externalDataSource" ],
+		"equalKeys"  : [ "externalDataSource", "enabled" ]
+	},
+	"fieldPermissions" : {
+		"uniqueKeys" : [ "field" ],
+		"equalKeys"  : [ "field", "editable", "readable" ]
+	},
+	"layoutAssignments" : {
+		"uniqueKeys" : [ "layout", "recordType" ],
+		"equalKeys"  : [ "layout", "recordType" ]
+	},
+	"objectPermissions" : {
+		"uniqueKeys" : [ "object" ],
+		"equalKeys"  : [ "object", "allowCreate", "allowDelete", 
+							"allowEdit", "allowRead", 
+							"modifyAllRecords", "viewAllRecords" ]
+	},
+	"pageAccesses" : {
+		"uniqueKeys" : [ "apexPage" ],
+		"equalKeys"  : [ "apexPage", "enabled" ]
+	},
+	"recordTypeVisibilities" : {
+		"uniqueKeys" : [ "recordType" ],
+		"equalKeys"  : [ "recordType", "default", "visible" ]
+	},
+	"tabVisibilities" : {
+		"uniqueKeys" : [ "tab" ],
+		"equalKeys"  : [ "tab", "visibility" ]
+	},
+	"userLicense" : {
+		"uniqueKeys" : [],
+		"equalKeys"  : []
+	},
+	"userPermissions" : {
+		"uniqueKeys" : [ "name" ],
+		"equalKeys"  : [ "name", "enabled" ]
+	},
+	"applicationVisibilities" : {
+		"uniqueKeys" : [ "application" ],
+		"equalKeys"  : [ "application", "default", "visible" ]
+	},
+}
