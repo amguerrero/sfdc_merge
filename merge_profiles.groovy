@@ -113,10 +113,26 @@ def buildUniqueKey(def node, def nodeTypeConfig) {
 	def uniqueKey = null
 	if (nodeTypeConfig) {
 		uniqueKey = node.name().localPart + "#"
-		nodeTypeConfig.uniqueKeys.each { key ->
-			if (node."$key") {
-				uniqueKey += node."$key"[0].value()[0] + "#"
+		if (nodeTypeConfig.uniqueKeys) {
+			nodeTypeConfig.uniqueKeys.each { key ->
+				if (node."$key") {
+					uniqueKey += node."$key"[0].value()[0] + "#"
+				}
 			}
+		} else {
+			def exclusiveUniqueKey = ''
+			for (def eukList : nodeTypeConfig.exclusiveUniqueKeys) {
+				for (def euk : eukList) {
+					if (node."$euk"[0])
+					exclusiveUniqueKey += node."$euk"[0].value()[0] + "#"
+				}
+
+				if (exclusiveUniqueKey != '') {
+					break
+				}
+			}
+
+			uniqueKey += exclusiveUniqueKey
 		}
 	}
 

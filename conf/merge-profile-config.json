@@ -16,7 +16,7 @@
 		"equalKeys"  : [ "field", "editable", "readable" ]
 	},
 	"layoutAssignments" : {
-		"uniqueKeys" : [ "layout", "recordType" ],
+		"exclusiveUniqueKeys" : [ ["recordType"], ["layout"] ],
 		"equalKeys"  : [ "layout", "recordType" ]
 	},
 	"objectPermissions" : {
