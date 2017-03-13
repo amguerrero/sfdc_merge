@@ -3,17 +3,31 @@ import groovy.json.JsonSlurperClassic
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 
+def mergeType = args[4]
 def scriptBase = args[3]
 def xmlParser = new XmlParser(false, true, true)
 def ancientNodes = xmlParser.parse(args[0])
 def oursNodes 	= xmlParser.parse(args[1])
 def theirsNodes	= xmlParser.parse(args[2])
-def profile = xmlParser.parse(scriptBase + '/nodes/ProfileBase.profile')
 def conflictOurs = xmlParser.parse(scriptBase + '/nodes/ConflictOurs.xml')
 def conflictTheirs = xmlParser.parse(scriptBase + '/nodes/ConflictTheirs.xml')
 def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
 
-def config = new JsonSlurperClassic().parse(new File(scriptBase + '/conf/merge-profile-config.json')) 
+def patchCore = scriptBase
+def patchConfig = scriptBase
+
+switch(margeType) {
+	case 'profile':
+		patchCore += '/core/core.profile'
+		patchConfig = '/config/profile.json'
+	break
+	default:
+		System.exit(1)
+	break
+}
+
+def base = xmlParser.parse(patchCore)
+def config = new JsonSlurperClassic().parse(new File(patchConfig)) 
 
 // #### MAIN ####
 ancient = [:]
@@ -91,7 +105,7 @@ oursIds.each { id ->
 }
 
 ours.sort { it.key }.each {
-	profile.append it.value.node
+	base.append it.value.node
 }
 
 def sw = new StringWriter()
@@ -100,7 +114,7 @@ printer.with {
   preserveWhitespace = true
   expandEmptyElements = true
 }
-printer.print(profile)
+printer.print(base)
 
 // writing the file in ours
 new File(args[1]).withWriter('UTF-8') { it.write "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n$sw" }
