@@ -39,3 +39,6 @@ You can also choose which metadata you want to use this driver to.
 The merge driver uses the configuration in the file `.git/scritps/sf_merge/config/<metadataType>.json` to know what nodes to merge and how to identify if the nodes are the same node and if they are equal between the branches.
 
 If a node type is not configured there, the merge driver will choose the one in the current branch.
+
+# About this repository
+This repository is based on code from [Amguerrero's](https://github.com/amguerrero) repository *[Salesforce Profile Specific Git Merge Driver](https://github.com/amguerrero/sfdc_merge)*
