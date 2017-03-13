@@ -4,6 +4,7 @@ This is a git merge driver specific for Salesforce.com Metadata (WIP).
 Now supports:
 * Profiles
 * Permission Sets
+* Custom Labels
 
 The merge is done based on the nodes of the files, checking if any node changed in both the local copy and the branch we’re trying to merge, and merging automatically whenever there is no conflict.
 
@@ -22,6 +23,10 @@ Then edit the *.git/config* file and add the following lines:
 	name = A custom merge driver for Salesforce permission sets
 	driver = groovy .git/scripts/sfdc-merge/sfdc_merge.groovy %O %A %B 'permissionset' .git/scripts/sfdc-merge
 	recursive = binary
+[merge "sfdc-labels"]
+	name = A custom merge driver for Salesforce custom labels
+	driver = groovy .git/scripts/sfdc-merge/sfdc_merge.groovy %O %A %B 'labels' .git/scripts/sfdc-merge
+	recursive = binary
 ```
 
 Which will configure the merge drivers, and configure it to run the groovy script, the merges of the metadata.
@@ -30,6 +35,7 @@ Then create the file `.git/info/attributes` if it doesn’t exist yet and add th
 ```
 *.profile merge=sfdc-profiles
 *.permissionset merge=sfdc-permsets
+*.labels merge=sfdc-labels
 ```
 
 This will instruct git that all the Salesforce files should be merged using the new merge drivers.

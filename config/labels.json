@@ -1,0 +1,10 @@
+{
+	"fullName" : {
+		"uniqueKeys" : [],
+		"equalKeys"  : []
+	},
+	"labels" : {
+		"uniqueKeys" : [ "fullName" ],
+		"equalKeys"  : [ "fullName", "language", "categories", "protected", "shortDescription", "value" ]
+	}
+}

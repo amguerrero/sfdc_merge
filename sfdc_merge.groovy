@@ -25,6 +25,10 @@ switch(mergeType) {
 		patchCore += '/core/core.permissionset'
 		patchConfig = '/config/permissionset.json'
 	break
+	case 'labels':
+		patchCore += '/core/core.labels'
+		patchConfig = '/config/labels.json'
+	break
 	default:
 		System.exit(1)
 	break
