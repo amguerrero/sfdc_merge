@@ -10,17 +10,17 @@ The merge is done based on the nodes of the files, checking if any node changed 
 In the case of a node being modified in our local workspace and in the branch we try to merge both nodes are marked with a ```<CONFLICT />``` tag that specifies from which change the node comes so it makes it easier to identify and resolve the conflict.
 
 ## How to add it to your current git repository
-In order to use this merge driver we need to copy the content of the directory directory `sf_merge/* into *.git/scripts/sf_merge/` (create this directory if it doesn’t exist yet).
+In order to use this merge driver we need to copy the content of the directory directory `sfdc-merge/* into *.git/scripts/sfdc-merge/` (create this directory if it doesn’t exist yet).
 
 Then edit the *.git/config* file and add the following lines:
 ```
 [merge "sfdc-profiles"]
 	name = A custom merge driver for Salesforce profiles
-	driver = groovy .git/scripts/sf_merge/sfdc_merge.groovy %O %A %B 'profile' .git/scripts/sf_merge
+	driver = groovy .git/scripts/sfdc-merge/sfdc_merge.groovy %O %A %B 'profile' .git/scripts/sfdc-merge
 	recursive = binary
 [merge "sfdc-permsets"]
 	name = A custom merge driver for Salesforce permission sets
-	driver = groovy .git/scripts/sf_merge/sfdc_merge.groovy %O %A %B 'permissionset' .git/scripts/sf_merge
+	driver = groovy .git/scripts/sfdc-merge/sfdc_merge.groovy %O %A %B 'permissionset' .git/scripts/sfdc-merge
 	recursive = binary
 ```
 
@@ -36,7 +36,7 @@ This will instruct git that all the Salesforce files should be merged using the 
 You can also choose which metadata you want to use this driver to.
 
 ## Configure the driver
-The merge driver uses the configuration in the file `.git/scritps/sf_merge/config/<metadataType>.json` to know what nodes to merge and how to identify if the nodes are the same node and if they are equal between the branches.
+The merge driver uses the configuration in the file `.git/scritps/sfdc-merge/config/<metadataType>.json` to know what nodes to merge and how to identify if the nodes are the same node and if they are equal between the branches.
 
 If a node type is not configured there, the merge driver will choose the one in the current branch.
 

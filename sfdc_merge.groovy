@@ -16,7 +16,7 @@ def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
 def patchCore = scriptBase
 def patchConfig = scriptBase
 
-switch(margeType) {
+switch(mergeType) {
 	case 'profile':
 		patchCore += '/core/core.profile'
 		patchConfig = '/config/profile.json'
