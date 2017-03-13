@@ -21,6 +21,10 @@ switch(margeType) {
 		patchCore += '/core/core.profile'
 		patchConfig = '/config/profile.json'
 	break
+	case 'permissionset':
+		patchCore += '/core/core.permissionset'
+		patchConfig = '/config/permissionset.json'
+	break
 	default:
 		System.exit(1)
 	break
