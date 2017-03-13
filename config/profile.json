@@ -44,9 +44,5 @@
 	"userPermissions" : {
 		"uniqueKeys" : [ "name" ],
 		"equalKeys"  : [ "name", "enabled" ]
-	},
-	"applicationVisibilities" : {
-		"uniqueKeys" : [ "application" ],
-		"equalKeys"  : [ "application", "default", "visible" ]
-	},
+	}
 }
