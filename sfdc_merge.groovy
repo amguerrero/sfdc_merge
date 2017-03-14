@@ -103,12 +103,14 @@ theirsNodes."*".each { node ->
 }
 
 oursIds.each { id ->
-	if (ours[id].existsInAncient && !ours[id].isEqualsToAncient) {
-		conflictCounter++
-		ours[id].node.append conflictOurs
-		ours[id].node.append conflictNoOther
-	} else if (ours[id].isEqualsToAncient) {
-		ours.remove(id)
+	if (ours[id]) {
+		if (ours[id].existsInAncient && !ours[id].isEqualsToAncient) {
+			conflictCounter++
+			ours[id].node.append conflictOurs
+			ours[id].node.append conflictNoOther
+		} else if (ours[id].isEqualsToAncient) {
+			ours.remove(id)
+		}
 	}
 }
 
