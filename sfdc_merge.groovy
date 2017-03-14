@@ -19,15 +19,15 @@ def patchConfig = scriptBase
 switch(mergeType) {
 	case 'profile':
 		patchCore += '/core/core.profile'
-		patchConfig = '/config/profile.json'
+		patchConfig += '/config/profile.json'
 	break
 	case 'permissionset':
 		patchCore += '/core/core.permissionset'
-		patchConfig = '/config/permissionset.json'
+		patchConfig += '/config/permissionset.json'
 	break
 	case 'labels':
 		patchCore += '/core/core.labels'
-		patchConfig = '/config/labels.json'
+		patchConfig += '/config/labels.json'
 	break
 	default:
 		System.exit(1)
