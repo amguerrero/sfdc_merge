@@ -3,8 +3,8 @@ import groovy.json.JsonSlurperClassic
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 
-def mergeType = args[4]
-def scriptBase = args[3]
+def mergeType = args[3]
+def scriptBase = args[4]
 def xmlParser = new XmlParser(false, true, true)
 def ancientNodes = xmlParser.parse(args[0])
 def oursNodes 	= xmlParser.parse(args[1])
