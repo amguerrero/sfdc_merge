@@ -2,6 +2,9 @@ import groovy.io.GroovyPrintStream
 import groovy.json.JsonSlurperClassic
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
+import java.util.logging.Logger
+
+Logger logger = Logger.getLogger("")
 
 def mergeType = args[3]
 def scriptBase = args[4]
@@ -40,10 +43,10 @@ def config = new JsonSlurperClassic().parse(new File(patchConfig))
 // #### MAIN ####
 ancient = [:]
 ancientNodes."*".each { node ->
-	def uniqueNodeKey = buildUniqueKey(node, config."${node.name().localPart}")
+	def uniqueNodeKey = buildUniqueKey(node, config."${getLocalPart(node)}")
 	if (uniqueNodeKey) {
 		ancient[uniqueNodeKey] = [
-			nodeType: node.name().localPart,
+			nodeType: getLocalPart(node),
 			node: node
 		]
 	}
@@ -53,24 +56,26 @@ ours = [:]
 oursIds = []
 unmatchedNodeCount = 0
 oursNodes."*".each { node ->
-	uniqueNodeKey = buildUniqueKey(node, config."${node.name().localPart}", unmatchedNodeCount++)
+	uniqueNodeKey = buildUniqueKey(node, config."${getLocalPart(node)}", unmatchedNodeCount++)
 	oursIds << uniqueNodeKey
 	ours[uniqueNodeKey] = [
-		nodeType: node.name().localPart,
+		nodeType: getLocalPart(node),
 		node: node,
 		existsInAncient: (ancient[uniqueNodeKey] != null),
-		isEqualsToAncient: areNodesEqual(node, ancient[uniqueNodeKey], config."${node.name().localPart}")
+		isEqualsToAncient: areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")
 	]
 }
 
 def conflictCounter = 0
 theirsNodes."*".each { node ->
-	uniqueNodeKey = buildUniqueKey(node, config."${node.name().localPart}")
+	def localPart = getLocalPart(node);
+
+	uniqueNodeKey = buildUniqueKey(node, config."${getLocalPart(node)}")
 	if (uniqueNodeKey) {
 		existsInAncient = ancient[uniqueNodeKey] != null
-		isEqualsToAncient = areNodesEqual(node, ancient[uniqueNodeKey], config."${node.name().localPart}")
+		isEqualsToAncient = areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")
 		existsInOurs = oursIds.remove(uniqueNodeKey)
-		isEqualsToOurs = areNodesEqual(node, ours[uniqueNodeKey], config."${node.name().localPart}")
+		isEqualsToOurs = areNodesEqual(node, ours[uniqueNodeKey], config."${getLocalPart(node)}")
 	
 		if ((!existsInAncient && existsInOurs && isEqualsToOurs) ||
 			(existsInAncient && (
@@ -136,7 +141,7 @@ System.exit(conflictCounter)
 def buildUniqueKey(def node, def nodeTypeConfig) {
 	def uniqueKey = null
 	if (nodeTypeConfig) {
-		uniqueKey = node.name().localPart + "#"
+		uniqueKey = getLocalPart(node) + "#"
 		if (nodeTypeConfig.uniqueKeys) {
 			nodeTypeConfig.uniqueKeys.each { key ->
 				if (node."$key") {
@@ -166,7 +171,7 @@ def buildUniqueKey(def node, def nodeTypeConfig) {
 def buildUniqueKey(def node, def nodeTypeConfig, def count) {
 	def uniqueKey = buildUniqueKey(node, nodeTypeConfig)
 	if (uniqueKey == null) {
-		uniqueKey += node.name().localPart + "#${count}#"
+		uniqueKey += getLocalPart(node) + "#${count}#"
 	}
 
 	uniqueKey
@@ -186,5 +191,13 @@ def areNodesEqual(def node1, def node2, def nodeTypeConfig) {
 		return true
 	} else {
 		return node1.value()[0] == node2.node.value()[0]
+	}
+}
+
+def getLocalPart(def node) {
+	try {
+		return node.name().localPart
+	} catch (Exception ex) {
+		return node.name().split(':')[0]
 	}
 }
