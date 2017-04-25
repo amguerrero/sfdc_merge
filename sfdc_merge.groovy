@@ -179,7 +179,7 @@ def areNodesEqual(def node1, def node2, def nodeTypeConfig) {
 
 	if (nodeTypeConfig && nodeTypeConfig.equalKeys && !nodeTypeConfig.equalKeys.isEmpty()) {
 		for (def key : nodeTypeConfig.equalKeys) {
-			if (node1."$key"[0] && node1."$key"[0].value()[0] != node2.node."$key"[0].value()[0]) {
+			if (node1."$key"[0] && node2."$key"[0] && node1."$key"[0].value()[0] != node2.node."$key"[0].value()[0]) {
 				return false
 			}
 		}
