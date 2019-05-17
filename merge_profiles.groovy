@@ -5,10 +5,11 @@ import groovy.xml.XmlUtil
 
 def scriptBase = args[3]
 def xmlParser = new XmlParser(false, true, true)
-def ancientNodes = xmlParser.parse(args[0])
+def basePath = getNodeBase(args[0], args[1], args[2], scriptBase)
+def profile = xmlParser.parse(basePath)
+def ancientNodes = xmlParser.parse(treatNoBase(args[0], basePath))
 def oursNodes 	= xmlParser.parse(args[1])
 def theirsNodes	= xmlParser.parse(args[2])
-def profile = xmlParser.parse(scriptBase + '/nodes/ProfileBase.profile')
 def conflictOurs = xmlParser.parse(scriptBase + '/nodes/ConflictOurs.xml')
 def conflictTheirs = xmlParser.parse(scriptBase + '/nodes/ConflictTheirs.xml')
 def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
@@ -162,5 +163,32 @@ def areNodesEqual(def node1, def node2, def nodeTypeConfig) {
 		return true
 	} else {
 		return node1.value()[0] == node2.node.value()[0]
+	}
+}
+
+def treatNoBase(def path1, def path2) {
+	def tmpFile = new File(path1)
+	if (tmpFile.length()>0)
+	{
+		return path1
+	} else {
+		return path2
+	}
+}
+
+def getNodeBase(def path1, def path2, def path3, def scriptBase) {
+	def tmpFile = new File(path1)
+	if (tmpFile.length()==0)
+	{
+		tmpFile = new File(path2)
+		if (tmpFile.length()==0)
+		{
+			tmpFile = new File(path3)
+		}
+	}
+	if (tmpFile.readLines().get(2).contains("Profile")) {
+		return scriptBase + '/nodes/ProfileBase.profile'
+	} else {
+		return scriptBase + '/nodes/PermissionSetBase.permissionset'
 	}
 }
