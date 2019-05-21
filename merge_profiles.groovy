@@ -14,7 +14,7 @@ def conflictOurs = xmlParser.parse(scriptBase + '/nodes/ConflictOurs.xml')
 def conflictTheirs = xmlParser.parse(scriptBase + '/nodes/ConflictTheirs.xml')
 def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
 
-def config = new JsonSlurperClassic().parse(new File(scriptBase + '/conf/merge-profile-config.json')) 
+def config = new JsonSlurperClassic().parse(new File(getConfigPath(basePath, scriptBase))) 
 
 // #### MAIN ####
 ancient = [:]
@@ -186,9 +186,23 @@ def getNodeBase(def path1, def path2, def path3, def scriptBase) {
 			tmpFile = new File(path3)
 		}
 	}
-	if (tmpFile.readLines().get(2).contains("Profile")) {
+	def lineToRead = 0
+	while (!tmpFile.readLines().get(lineToRead).contains('xmlns')) {
+		lineToRead = lineToRead + 1
+	}
+	if (tmpFile.readLines().get(lineToRead).toLowerCase().contains('profile')) {
 		return scriptBase + '/nodes/ProfileBase.profile'
 	} else {
 		return scriptBase + '/nodes/PermissionSetBase.permissionset'
 	}
+}
+
+def getConfigPath(def basePath, def scriptBase) {
+	String strBasePath = "" + basePath
+	def pathTab = basePath.split('\\.')
+	def returnPath = scriptBase + '/conf/merge-permset-config.json'
+	if (pathTab[-1].toLowerCase() == 'profile') {
+		returnPath = scriptBase + '/conf/merge-profile-config.json'
+	}
+	return returnPath
 }
