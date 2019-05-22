@@ -5,7 +5,8 @@ import groovy.xml.XmlUtil
 
 def scriptBase = args[3]
 def xmlParser = new XmlParser(false, true, true)
-def basePath = getNodeBase(args[0], args[1], args[2], scriptBase)
+def metadataType = getMetadataType(args[0], args[1], args[2])
+def basePath = getNodeBase(metadataType, scriptBase)
 def profile = xmlParser.parse(basePath)
 def ancientNodes = xmlParser.parse(treatNoBase(args[0], basePath))
 def oursNodes 	= xmlParser.parse(args[1])
@@ -14,7 +15,7 @@ def conflictOurs = xmlParser.parse(scriptBase + '/nodes/ConflictOurs.xml')
 def conflictTheirs = xmlParser.parse(scriptBase + '/nodes/ConflictTheirs.xml')
 def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
 
-def config = new JsonSlurperClassic().parse(new File(getConfigPath(basePath, scriptBase))) 
+def config = new JsonSlurperClassic().parse(new File(getConfigPath(metadataType, scriptBase))) 
 
 // #### MAIN ####
 ancient = [:]
@@ -176,7 +177,7 @@ def treatNoBase(def path1, def path2) {
 	}
 }
 
-def getNodeBase(def path1, def path2, def path3, def scriptBase) {
+def getMetadataType(def path1, def path2, def path3) {
 	def tmpFile = new File(path1)
 	if (tmpFile.length()==0)
 	{
@@ -190,19 +191,23 @@ def getNodeBase(def path1, def path2, def path3, def scriptBase) {
 	while (!tmpFile.readLines().get(lineToRead).contains('xmlns')) {
 		lineToRead = lineToRead + 1
 	}
-	if (tmpFile.readLines().get(lineToRead).toLowerCase().contains('profile')) {
-		return scriptBase + '/nodes/ProfileBase.profile'
-	} else {
-		return scriptBase + '/nodes/PermissionSetBase.permissionset'
+	switch (tmpFile.readLines().get(lineToRead).toLowerCase()) {
+		case ~/.*profile.*/:
+			return 'Profile'
+			break;
+		case ~/.*permissionset.*/:
+			return 'PermissionSet'
+			break;
+		default:
+			println "Bad input, this metadata type not handled"
+			System.exit(1)
 	}
 }
 
-def getConfigPath(def basePath, def scriptBase) {
-	String strBasePath = "" + basePath
-	def pathTab = basePath.split('\\.')
-	def returnPath = scriptBase + '/conf/merge-permset-config.json'
-	if (pathTab[-1].toLowerCase() == 'profile') {
-		returnPath = scriptBase + '/conf/merge-profile-config.json'
-	}
-	return returnPath
+def getNodeBase(def metadataType, def scriptBase) {
+	return scriptBase + '/nodes/Base.' + metadataType.toLowerCase()
+}
+
+def getConfigPath(def metadataType, def scriptBase) {
+	return scriptBase + '/conf/merge-' + metadataType.toLowerCase() + '-config.json'
 }
