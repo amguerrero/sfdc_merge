@@ -9,36 +9,17 @@ Logger logger = Logger.getLogger("")
 def mergeType = args[3]
 def scriptBase = args[4]
 def xmlParser = new XmlParser(false, true, true)
-def ancientNodes = xmlParser.parse(args[0])
+def metadataType = getMetadataType(args[0], args[1], args[2])
+def basePath = getNodeBase(metadataType, scriptBase)
+def profile = xmlParser.parse(basePath)
+def ancientNodes = xmlParser.parse(treatNoBase(args[0], basePath))
 def oursNodes 	= xmlParser.parse(args[1])
 def theirsNodes	= xmlParser.parse(args[2])
 def conflictOurs = xmlParser.parse(scriptBase + '/nodes/ConflictOurs.xml')
 def conflictTheirs = xmlParser.parse(scriptBase + '/nodes/ConflictTheirs.xml')
 def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
 
-def patchCore = scriptBase
-def patchConfig = scriptBase
-
-switch(mergeType) {
-	case 'profile':
-		patchCore += '/core/core.profile'
-		patchConfig += '/config/profile.json'
-	break
-	case 'permissionset':
-		patchCore += '/core/core.permissionset'
-		patchConfig += '/config/permissionset.json'
-	break
-	case 'labels':
-		patchCore += '/core/core.labels'
-		patchConfig += '/config/labels.json'
-	break
-	default:
-		System.exit(1)
-	break
-}
-
-def base = xmlParser.parse(patchCore)
-def config = new JsonSlurperClassic().parse(new File(patchConfig)) 
+def config = new JsonSlurperClassic().parse(new File(getConfigPath(metadataType, scriptBase)))
 
 // #### MAIN ####
 ancient = [:]
@@ -76,7 +57,7 @@ theirsNodes."*".each { node ->
 		isEqualsToAncient = areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")
 		existsInOurs = oursIds.remove(uniqueNodeKey)
 		isEqualsToOurs = areNodesEqual(node, ours[uniqueNodeKey], config."${getLocalPart(node)}")
-	
+
 		if ((!existsInAncient && existsInOurs && isEqualsToOurs) ||
 			(existsInAncient && (
 				(existsInOurs && (isEqualsToOurs || isEqualsToAncient)) ||
@@ -200,4 +181,48 @@ def getLocalPart(def node) {
 	} catch (Exception ex) {
 		return node.name().split(':')[0]
 	}
+}
+def treatNoBase(def path1, def path2) {
+	def tmpFile = new File(path1)
+	if (tmpFile.length()>0)
+	{
+		return path1
+	} else {
+		return path2
+	}
+}
+
+def getMetadataType(def path1, def path2, def path3) {
+	def tmpFile = new File(path1)
+	if (tmpFile.length()==0)
+	{
+		tmpFile = new File(path2)
+		if (tmpFile.length()==0)
+		{
+			tmpFile = new File(path3)
+		}
+	}
+	def lineToRead = 0
+	while (!tmpFile.readLines().get(lineToRead).contains('xmlns')) {
+		lineToRead = lineToRead + 1
+	}
+	switch (tmpFile.readLines().get(lineToRead).toLowerCase()) {
+		case ~/.*profile.*/:
+			return 'Profile'
+			break;
+		case ~/.*permissionset.*/:
+			return 'PermissionSet'
+			break;
+		default:
+			println "Bad input, this metadata type not handled"
+			System.exit(1)
+	}
+}
+
+def getNodeBase(def metadataType, def scriptBase) {
+	return scriptBase + '/nodes/Base.' + metadataType.toLowerCase()
+}
+
+def getConfigPath(def metadataType, def scriptBase) {
+	return scriptBase + '/conf/merge-' + metadataType.toLowerCase() + '-config.json'
 }

@@ -1,11 +1,7 @@
 {
 	"applicationVisibilities" : {
 		"uniqueKeys" : [ "application" ],
-		"equalKeys"  : [ "application", "default", "visible" ]
-	},
-	"categoryGroupVisibilities" : {
-		"uniqueKeys" : [ "dataCategoryGroup" ],
-		"equalKeys"  : [ "dataCategoryGroup", "dataCategories", "visibility" ]
+		"equalKeys"  : [ "application", "visible" ]
 	},
 	"classAccesses" : {
 		"uniqueKeys" : [ "apexClass" ],
@@ -21,19 +17,11 @@
 	},
 	"fieldPermissions" : {
 		"uniqueKeys" : [ "field" ],
-		"equalKeys"  : [ "field", "editable", "hidden", "readable" ]
+		"equalKeys"  : [ "field", "editable", "readable" ]
 	},
-	"layoutAssignments" : {
-		"exclusiveUniqueKeys" : [ ["recordType"], ["layout"] ],
-		"equalKeys"  : [ "layout", "recordType" ]
-	},
-	"loginHours" : {
-		"uniqueKeys" : [ "weekdayStart", "weekdayEnd" ],
-		"equalKeys"  : [ "weekdayStart", "weekdayEnd" ]
-	},
-	"loginIpRanges" : {
-		"uniqueKeys" : [ "startAddress", "endAddress" ],
-		"equalKeys"  : [ "description", "endAddress", "startAddress" ]
+	"license" : {
+		"uniqueKeys" : [],
+		"equalKeys"  : []
 	},
 	"objectPermissions" : {
 		"uniqueKeys" : [ "object" ],
@@ -47,9 +35,9 @@
 	},
 	"recordTypeVisibilities" : {
 		"uniqueKeys" : [ "recordType" ],
-		"equalKeys"  : [ "recordType", "default", "visible", "personAccountDefault" ]
+		"equalKeys"  : [ "recordType", "visible" ]
 	},
-	"tabVisibilities" : {
+	"tabSettings" : {
 		"uniqueKeys" : [ "tab" ],
 		"equalKeys"  : [ "tab", "visibility" ]
 	},
