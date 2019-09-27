@@ -6,18 +6,17 @@ import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("")
 
-def mergeType = args[3]
-def scriptBase = args[4]
+def scriptBase = args[3]
 def xmlParser = new XmlParser(false, true, true)
 def metadataType = getMetadataType(args[0], args[1], args[2])
-def basePath = getNodeBase(metadataType, scriptBase)
-def profile = xmlParser.parse(basePath)
-def ancientNodes = xmlParser.parse(treatNoBase(args[0], basePath))
-def oursNodes 	= xmlParser.parse(args[1])
-def theirsNodes	= xmlParser.parse(args[2])
-def conflictOurs = xmlParser.parse(scriptBase + '/nodes/ConflictOurs.xml')
-def conflictTheirs = xmlParser.parse(scriptBase + '/nodes/ConflictTheirs.xml')
-def conflictNoOther = xmlParser.parse(scriptBase + '/nodes/ConflictNoOther.xml')
+def baseXML = getNodeBaseXML(metadataType)
+def base = xmlParser.parseText(baseXML)
+def ancientNodes = xmlParser.parseText(treatNoBase(new File(args[0]).text, baseXML))//ancestor’s version of the conflicting file
+def oursNodes 	= xmlParser.parse(args[1])//current version of the conflicting file
+def theirsNodes	= xmlParser.parse(args[2])//other branch's version of the conflicting file
+def conflictOurs = xmlParser.parseText('<CONFLICT>NODE FROM OURS</CONFLICT>')
+def conflictTheirs = xmlParser.parseText('<CONFLICT>NODE FROM THEIRS</CONFLICT>')
+def conflictNoOther = xmlParser.parseText('<CONFLICT>NO OTHER NODE. BUT THIS IS DIFFERENT TO ANCIENT</CONFLICT>')
 
 def config = new JsonSlurperClassic().parse(new File(getConfigPath(metadataType, scriptBase)))
 
@@ -43,7 +42,8 @@ oursNodes."*".each { node ->
 		nodeType: getLocalPart(node),
 		node: node,
 		existsInAncient: (ancient[uniqueNodeKey] != null),
-		isEqualsToAncient: areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")
+    isEqualsToAncient: areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")[0],
+    isEqualsToAncientFailedList: areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")[1]
 	]
 }
 
@@ -54,9 +54,10 @@ theirsNodes."*".each { node ->
 	uniqueNodeKey = buildUniqueKey(node, config."${getLocalPart(node)}")
 	if (uniqueNodeKey) {
 		existsInAncient = ancient[uniqueNodeKey] != null
-		isEqualsToAncient = areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")
+    isEqualsToAncient = areNodesEqual(node, ancient[uniqueNodeKey], config."${getLocalPart(node)}")[0]
 		existsInOurs = oursIds.remove(uniqueNodeKey)
-		isEqualsToOurs = areNodesEqual(node, ours[uniqueNodeKey], config."${getLocalPart(node)}")
+    isEqualsToOurs = areNodesEqual(node, ours[uniqueNodeKey], config."${getLocalPart(node)}")[0]
+    isEqualsToOursFailedList = areNodesEqual(node, ours[uniqueNodeKey], config."${getLocalPart(node)}")[1]
 
 		if ((!existsInAncient && existsInOurs && isEqualsToOurs) ||
 			(existsInAncient && (
@@ -64,7 +65,7 @@ theirsNodes."*".each { node ->
 				(!existsInOurs && isEqualsToAncient)))) {
 			// Keep OURS
 			// do nothing
-		} else if (existsInAncient && existsInOurs && ours[uniqueNodeKey].isEqualsToAncient) {
+		} else if (existsInAncient && existsInOurs && ours[uniqueNodeKey].isEqualsToAncient) { // existed before, not modified in ours, use theirs (incomming)
 			// Use THEIRS
 			ours[uniqueNodeKey].node = node
 		} else if (!existsInAncient && !existsInOurs) {
@@ -74,31 +75,49 @@ theirsNodes."*".each { node ->
 			]
 		} else {
 			// CONFLICT detected
-			conflictCounter++
-			node.append conflictTheirs
+
+      isEqualsToOursFailedList.each { entry ->
+        conflictCounter++
+        if (entry == null) {
+          node."${getLocalPart(node.value()[0])}"[0].value()[0] = "\n<<<<<<< CURRENT\nnull\n=======\n${node."${getLocalPart(node.value()[0])}"[0].value()[0]}\n>>>>>>> OTHER\n"
+        } else {
+          node."${getLocalPart(entry)}"[0].value()[0] = "\n<<<<<<< CURRENT\n${entry.value()[0]}\n=======\n${node."${getLocalPart(entry)}"[0].value()[0]}\n>>>>>>> OTHER\n"
+        }
+      }
+
+      // node.append conflictTheirs
 			if (existsInOurs) {
-				ours[uniqueNodeKey].node.append conflictOurs
-			} else {
-				node.append conflictNoOther
+			  ours[uniqueNodeKey].node = node
+ 			} else {
+        // this should never happen
+        // println "this should never happen"
+				// node.append conflictNoOther
+        ours["${uniqueNodeKey}CONFLICT#"] = [
+				  node: node
+			  ]
 			}
-			ours["${uniqueNodeKey}CONFLICT#"] = [
-				node: node
-			]
 		}
 	}
 }
 
-oursIds.each { id ->
+oursIds.each { id -> // all left oursIds see #59
 	if (ours[id]) {
-		if (ours[id].existsInAncient && !ours[id].isEqualsToAncient) {
-			conflictCounter++
-			ours[id].node.append conflictOurs
-			ours[id].node.append conflictNoOther
+		if (ours[id].existsInAncient && !ours[id].isEqualsToAncient) { // not exists in theirs branch, modified in ours
+      ours[id].isEqualsToAncientFailedList.each { entry ->
+        conflictCounter++
+        ours[id].node."${getLocalPart(entry)}"[0].value()[0] = "\n<<<<<<< CURRENT\n${entry.value()[0]}\n=======\nnull\n>>>>>>> OTHER\n"
+      }
+/* 			ours[id].node.append conflictOurs
+			ours[id].node.append conflictNoOther */
 		} else if (ours[id].isEqualsToAncient) {
-			ours.remove(id)
+			ours.remove(id) // deleted in theirs branch, delete in ours
 		}
 	}
 }
+
+/* ours.sort { it.key }.each{
+    key, value -> println key;
+} */
 
 ours.sort { it.key }.each {
 	base.append it.value.node
@@ -113,7 +132,7 @@ printer.with {
 printer.print(base)
 
 // writing the file in ours
-new File(args[1]).withWriter('UTF-8') { it.write "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n$sw" }
+new File(args[1]).withWriter('UTF-8') { it.write "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n${sw.toString().replaceAll("&lt;","<").replaceAll("&gt;",">")}" }
 
 println "Conflicts Found: $conflictCounter"
 System.exit(conflictCounter)
@@ -160,18 +179,27 @@ def buildUniqueKey(def node, def nodeTypeConfig, def count) {
 
 def areNodesEqual(def node1, def node2, def nodeTypeConfig) {
 	if (node2 == null || node2.node == null) {
-		return false
+		return [false, [null]]
 	}
 
 	if (nodeTypeConfig && nodeTypeConfig.equalKeys && !nodeTypeConfig.equalKeys.isEmpty()) {
+    def list = []
 		for (def key : nodeTypeConfig.equalKeys) {
-			if (node1."$key"[0] && node2."$key"[0] && node1."$key"[0].value()[0] != node2.node."$key"[0].value()[0]) {
-				return false
-			}
+			  if (node1."$key"[0] && node2.node."$key"[0] && node1."$key"[0].value()[0] != node2.node."$key"[0].value()[0]) {
+            list.push(node2.node."$key"[0])
+			  }
 		}
-		return true
+    if (!list.isEmpty()) {
+      return [false, list]
+    } else {
+		  return [true, []]
+    }
 	} else {
-		return node1.value()[0] == node2.node.value()[0]
+		if (node1.value()[0] == node2.node.value()[0]) {
+      return [true, []]
+    } else {
+      return [false, node2.node.value()[0]]
+    }
 	}
 }
 
@@ -182,13 +210,13 @@ def getLocalPart(def node) {
 		return node.name().split(':')[0]
 	}
 }
-def treatNoBase(def path1, def path2) {
-	def tmpFile = new File(path1)
-	if (tmpFile.length()>0)
+
+def treatNoBase(def file1, def file2) {
+	if (file1.length()>0)
 	{
-		return path1
+		return file1
 	} else {
-		return path2
+		return file2
 	}
 }
 
@@ -213,14 +241,35 @@ def getMetadataType(def path1, def path2, def path3) {
 		case ~/.*permissionset.*/:
 			return 'PermissionSet'
 			break;
+    case ~/.*customlabels.*/:
+			return 'Labels'
+			break;
 		default:
 			println "Bad input, this metadata type not handled"
 			System.exit(1)
 	}
 }
 
-def getNodeBase(def metadataType, def scriptBase) {
-	return scriptBase + '/nodes/Base.' + metadataType.toLowerCase()
+def getNodeBaseXML(def metadataType) {
+  	switch (metadataType) {
+		case 'Profile':
+			return '''<?xml version="1.0" encoding="UTF-8"?>
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata">
+</Profile>'''
+			break;
+		case 'PermissionSet':
+			return '''<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+</PermissionSet>'''
+			break;
+    case 'Labels':
+			return '''<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+</CustomLabels>'''
+			break;
+		default:
+      return null
+	}
 }
 
 def getConfigPath(def metadataType, def scriptBase) {
