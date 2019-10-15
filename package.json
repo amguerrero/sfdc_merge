@@ -1,0 +1,70 @@
+{
+  "name": "sfdx-merge-driver",
+  "version": "0.1.0",
+  "description": "git merge driver specific for Salesforce.com Metadata (WIP)",
+  "bin": "index.js",
+  "main": "index.js",
+  "files": [
+    "*.js",
+    "sfdx-merge-driver.1"
+  ],
+  "man": "./sfdx-merge-driver.1",
+  "scripts": {
+    "precommit": "lint-staged",
+    "docs": "tail -n +2 README.md | marked-man --manual 'User Commands' --version \"$npm_package_name@$npm_package_version\" > sfdx-merge-driver.1",
+    "prerelease": "npm t",
+    "postrelease": "npm publish && git push --follow-tags",
+    "pretest": "standard",
+    "release": "standard-version",
+    "test": "tap -J --coverage test/*.js"
+  },
+  "repository": "https://github.com/npm/npm-merge-driver",
+  "keywords": [
+    "sfdx",
+    "git",
+    "merge",
+    "driver",
+    "conflict",
+    "merge conflict",
+    "resolve conflict",
+    "automerge",
+    "autoresolve"
+  ],
+  "author": {
+    "name": "jayree"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "shelljs": "0.8.3",
+    "yargs": "^10.0.3"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^6.0.0",
+    "marked-man": "^0.2.1",
+    "nyc": "^11.3.0",
+    "prettier-standard": "^7.0.3",
+    "standard": "^10.0.3",
+    "standard-version": "^4.1.0",
+    "tap": "^11.0.0"
+  },
+  "config": {
+    "nyc": {
+      "exclude": [
+        "node_modules/**",
+        "test/**"
+      ]
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier-standard",
+      "git add"
+    ]
+  },
+  "bundleDependencies": [
+    "yargs",
+    "mkdirp"
+  ]
+}
