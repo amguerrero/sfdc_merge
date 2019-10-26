@@ -6,7 +6,17 @@ const fs = require('fs')
 const mkdirp = require('mkdirp')
 const path = require('path')
 const yargs = require('yargs')
-const shell = require('shelljs')
+const xml2js = require('xml2js')
+
+const builder = new xml2js.Builder({
+  xmldec: { version: '1.0', encoding: 'UTF-8' },
+  xmlns: true
+})
+
+// eslint-disable-next-line no-extend-native
+String.prototype.replaceAll = function (search, replacement) {
+  return this.split(search).join(replacement)
+}
 
 if (require.main === module) {
   parseArgs()
@@ -17,57 +27,62 @@ function parseArgs () {
     .command(
       'install',
       'Set up the merge driver in the current git repository.',
-    {
-      global: {
-        type: 'boolean',
-        default: false,
-        description: 'install to your user-level git configuration'
-      },
-      driver: {
-        type: 'string',
-        default:
-            'groovy .git/scripts/sfdx-merge/sfdx_merge.groovy %O %A %B .git/scripts/sfdx-merge',
-        description:
+      {
+        global: {
+          type: 'boolean',
+          default: false,
+          description: 'install to your user-level git configuration'
+        },
+        driver: {
+          type: 'string',
+          default: 'npx sfdx-merge-driver merge %O %A %B %P',
+          description:
             'string to install as the driver in the git configuration'
-      },
-      'driver-name': {
-        type: 'string',
-        default: 'sfdx-merge-driver',
-        description:
+        },
+        'driver-name': {
+          type: 'string',
+          default: 'sfdx-merge-driver',
+          description:
             'String to use as the merge driver name in your configuration.'
+        },
+        files: {
+          description: 'Filenames that will trigger this driver.',
+          type: 'array',
+          default: [
+            '*.profile',
+            '*.profile-meta.xml',
+            '*.permissionset',
+            '*.permissionset-meta.xml',
+            '*.labels',
+            '*.labels-meta.xml'
+          ]
+        }
       },
-      files: {
-        description: 'Filenames that will trigger this driver.',
-        type: 'array',
-        default: [
-          '*.profile',
-          '*.profile-meta.xml',
-          '*.permissionset',
-          '*.permissionset-meta.xml',
-          '*.labels',
-          '*.labels-meta.xml'
-        ]
-      }
-    },
       install
     )
     .command(
       'uninstall',
       'Remove a previously configured driver',
-    {
-      global: {
-        type: 'boolean',
-        default: false,
-        description: 'install to your user-level git configuration'
-      },
-      'driver-name': {
-        type: 'string',
-        default: 'sfdx-merge-driver',
-        description:
+      {
+        global: {
+          type: 'boolean',
+          default: false,
+          description: 'install to your user-level git configuration'
+        },
+        'driver-name': {
+          type: 'string',
+          default: 'sfdx-merge-driver',
+          description:
             'String to use as the merge driver name in your configuration.'
-      }
-    },
+        }
+      },
       uninstall
+    )
+    .command(
+      'merge <%O> <%A> <%B> <%P>',
+      'Check for conflicts and merge them if possible.',
+      {},
+      merge
     )
     .version(require('./package.json').version)
     .alias('version', 'v')
@@ -84,7 +99,9 @@ function install (argv) {
   )
   const opts = argv.global ? '--global' : '--local'
   cp.execSync(
-    `git config ${opts} merge."${argv.driverName}".name "A custom merge driver for Salesforce profiles"`
+    `git config ${opts} merge."${
+      argv.driverName
+    }".name "A custom merge driver for Salesforce profiles"`
   )
   cp.execSync(
     `git config ${opts} merge."${argv.driverName}".driver "${argv.driver}"`
@@ -99,6 +116,7 @@ function install (argv) {
       .split(/\r?\n/)
       .filter(line => !line.match(RE))
       .join('\n')
+    // eslint-disable-next-line no-empty
   } catch (e) {}
   if (attrContents && !attrContents.match(/[\n\r]$/g)) {
     attrContents = '\n'
@@ -108,10 +126,6 @@ function install (argv) {
     .join('\n')
   attrContents += '\n'
   fs.writeFileSync(attrFile, attrContents)
-  let packagePath = path.dirname(require.resolve('sfdx-merge-driver'))
-  shell.mkdir('-p', '.git/scripts/sfdx-merge/')
-  shell.cp('-R', `${packagePath}/sfdx_merge.groovy`, '.git/scripts/sfdx-merge/')
-  shell.cp('-R', `${packagePath}/conf`, '.git/scripts/sfdx-merge/')
   console.error(
     'sfdx-merge-driver:',
     argv.driverName,
@@ -134,12 +148,10 @@ function uninstall (argv) {
       throw e
     }
   }
-  try {
-    shell.rm('-rf', '.git/scripts')
-  } catch (e) {}
   let currAttrs
   try {
     currAttrs = fs.readFileSync(attrFile, 'utf8').split('\n')
+    // eslint-disable-next-line no-empty
   } catch (e) {}
   if (currAttrs) {
     let newAttrs = ''
@@ -158,9 +170,10 @@ function findAttributes (argv) {
   if (argv.global) {
     try {
       attrFile = cp
-        .execSync(`git config --global core.attributesfile`)
+        .execSync('git config --global core.attributesfile')
         .toString('utf8')
         .trim()
+      // eslint-disable-next-line no-empty
     } catch (e) {}
     if (!attrFile) {
       if (process.env.XDG_CONFIG_HOME) {
@@ -171,11 +184,214 @@ function findAttributes (argv) {
     }
   } else {
     const gitDir = cp
-      .execSync(`git rev-parse --git-dir`, {
+      .execSync('git rev-parse --git-dir', {
         encoding: 'utf8'
       })
       .trim()
     attrFile = path.join(gitDir, 'info', 'attributes')
   }
   return attrFile
+}
+
+function merge (argv) {
+  const md = new (require('./lib/mdmerger'))(argv['%O'], argv['%A'], argv['%B'])
+  const base = md.getBaseNodes()
+  const ancientNodes = md.getNodes(argv['%O']) // ancestor’s version of the conflicting file
+  const oursNodes = md.getNodes(argv['%A']) // current version of the conflicting file
+  const theirsNodes = md.getNodes(argv['%B']) // other branch's version of the conflicting file
+
+  console.error('sfdx-merge-driver: merging', argv['%P'])
+
+  const ancient = []
+  Object.keys(ancientNodes).forEach(localpart => {
+    let nodelist = ancientNodes[localpart]
+    if (!Array.isArray(nodelist)) {
+      nodelist = [nodelist]
+    }
+    nodelist.forEach(node => {
+      const uniqueNodeKey = md.buildUniqueKey(node, localpart)
+      if (uniqueNodeKey) {
+        ancient[uniqueNodeKey] = {
+          nodeType: localpart,
+          node: node
+        }
+      }
+    })
+  })
+
+  const ours = {}
+  let oursIds = []
+  let unmatchedNodeCount = 0
+  Object.keys(oursNodes).forEach(localpart => {
+    let nodelist = oursNodes[localpart]
+    if (!Array.isArray(nodelist)) {
+      nodelist = [nodelist]
+    }
+    nodelist.forEach(node => {
+      const uniqueNodeKey = md.buildUniqueKeyCount(
+        node,
+        localpart,
+        unmatchedNodeCount++
+      )
+      oursIds.push(uniqueNodeKey)
+      ours[uniqueNodeKey] = {
+        nodeType: localpart,
+        node: node,
+        existsInAncient: ancient[uniqueNodeKey] != null,
+        isEqualsToAncient: md.areNodesEqual(
+          node,
+          ancient[uniqueNodeKey],
+          localpart
+        )[0],
+        isEqualsToAncientFailedList: md.areNodesEqual(
+          node,
+          ancient[uniqueNodeKey],
+          localpart
+        )[1]
+      }
+    })
+  })
+
+  let conflictCounter = 0
+  Object.keys(theirsNodes).forEach(localpart => {
+    let nodelist = theirsNodes[localpart]
+    if (!Array.isArray(nodelist)) {
+      nodelist = [nodelist]
+    }
+    nodelist.forEach(node => {
+      const uniqueNodeKey = md.buildUniqueKey(node, localpart)
+      if (uniqueNodeKey) {
+        const existsInAncient = ancient[uniqueNodeKey] != null
+        const isEqualsToAncient = md.areNodesEqual(
+          node,
+          ancient[uniqueNodeKey],
+          localpart
+        )[0]
+        // eslint-disable-next-line no-unused-vars
+        let existsInOurs = oursIds.filter(function (value, index, arr) {
+          return value !== uniqueNodeKey
+        })
+        if (oursIds.includes(uniqueNodeKey)) {
+          existsInOurs = true
+          // eslint-disable-next-line no-unused-vars
+          oursIds = oursIds.filter(function (value, index, arr) {
+            return value !== uniqueNodeKey
+          })
+        } else {
+          existsInOurs = false
+        }
+        const isEqualsToOurs = md.areNodesEqual(
+          node,
+          ours[uniqueNodeKey],
+          localpart
+        )[0]
+        const isEqualsToOursFailedList = md.areNodesEqual(
+          node,
+          ours[uniqueNodeKey],
+          localpart
+        )[1]
+        if (
+          (!existsInAncient && existsInOurs && isEqualsToOurs) ||
+          (existsInAncient &&
+            ((existsInOurs && (isEqualsToOurs || isEqualsToAncient)) ||
+              (!existsInOurs && isEqualsToAncient)))
+        ) {
+          // Keep OURS
+          // do nothing
+        } else if (
+          existsInAncient &&
+          existsInOurs &&
+          ours[uniqueNodeKey].isEqualsToAncient
+        ) {
+          // existed before, not modified in ours, use theirs (incomming)
+          // Use THEIRS
+          ours[uniqueNodeKey].node = node
+        } else if (!existsInAncient && !existsInOurs) {
+          // Use THEIRS
+          ours[uniqueNodeKey] = {
+            node: node
+          }
+        } else {
+          // CONFLICT detected
+
+          isEqualsToOursFailedList.forEach(entry => {
+            if (entry == null) {
+              Object.keys(node).forEach(nkey => {
+                conflictCounter++
+                node[nkey][0] =
+                  '\n<<<<<<< CURRENT\n=======\n' +
+                  node[nkey][0] +
+                  '\n>>>>>>> OTHER\n'
+              })
+            } else {
+              conflictCounter++
+              node[entry.key][0] =
+                '\n<<<<<<< CURRENT\n' +
+                entry.value +
+                '\n=======\n' +
+                node[entry.key][0] +
+                '\n>>>>>>> OTHER\n'
+            }
+          })
+
+          if (existsInOurs) {
+            ours[uniqueNodeKey].node = node
+          } else {
+            ours[uniqueNodeKey] = {
+              nodeType: localpart,
+              node: node
+            }
+          }
+        }
+      }
+    })
+  })
+
+  oursIds.forEach(
+    id => {
+      if (ours[id]) {
+        if (ours[id].existsInAncient && !ours[id].isEqualsToAncient) {
+          // not exists in theirs branch, modified in ours
+          Object.keys(ours[id].node).forEach(nkey => {
+            conflictCounter++
+            ours[id].node[nkey][0] =
+              '\n<<<<<<< CURRENT\n' +
+              ours[id].node[nkey][0] +
+              '\n=======\n>>>>>>> OTHER\n'
+          })
+        } else if (ours[id].isEqualsToAncient) {
+          delete ours[id] // deleted in theirs branch, delete in ours
+        }
+      }
+    } // all left oursIds see #59
+  )
+
+  Object.keys(ours)
+    .sort()
+    .forEach(function (key) {
+      if (ours[key].nodeType !== '$') {
+        if (!Array.isArray(base[md.metadataType][ours[key].nodeType])) {
+          base[md.metadataType][ours[key].nodeType] = []
+        }
+        base[md.metadataType][ours[key].nodeType].push(ours[key].node)
+      } else {
+        base[md.metadataType][ours[key].nodeType] = ours[key].node
+      }
+    })
+
+  fs.writeFileSync(
+    argv['%A'],
+    builder
+      .buildObject(base)
+      .replaceAll('&lt;&lt;&lt;&lt;&lt;&lt;&lt;', '<<<<<<<')
+      .replaceAll('&gt;&gt;&gt;&gt;&gt;&gt;&gt;', '>>>>>>>')
+  )
+
+  if (conflictCounter > 0) {
+    console.error('Conflicts Found: ' + conflictCounter)
+    process.exit(conflictCounter)
+  } else {
+    console.error('sfdx-merge-driver:', argv['%P'], 'successfully merged.')
+    process.exit(0)
+  }
 }
