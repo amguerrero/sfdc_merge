@@ -2888,6 +2888,11 @@ marked-man@^0.7.0:
   resolved "https://registry.yarnpkg.com/marked-man/-/marked-man-0.7.0.tgz#220ba01d275d16f1a98e4e7fc3c5eac0630c68e4"
   integrity sha512-zxK5E4jbuARALc+fIUAanM2njVGnrd9YvKrqoDHUg2XwNLJijo39EzMIg59LecHBHsIHNtPqepqnJp4SmL/EVg==
 
+marked@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.7.0.tgz#b64201f051d271b1edc10a04d1ae9b74bb8e5c0e"
+  integrity sha512-c+yYdCZJQrsRjTPhUx7VKkApw9bwDkNbHUKo1ovgcfDjb2kc8rLuRbIFyXL5WOEUwzSSKo3IXpph2K6DqB/KZg==
+
 meow@^3.3.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/meow/-/meow-3.7.0.tgz#72cb668b425228290abbfa856892587308a801fb"

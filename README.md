@@ -2,13 +2,7 @@
 
 # sfdx-merge-driver(1) -- Salesforce Metadata Specific Git Merge Driver
 
-This is a git merge driver specific for Salesforce.com Metadata.
-
-Now supports:
-
-- Profiles
-- Permission Sets
-- Custom Labels
+This is a git merge driver specific for Salesforce.com Metadata (Profiles, Permission Sets, Custom Labels).
 
 The merge is done based on the nodes of the files, checking if any node changed in both the local copy and the branch we're trying to merge, and merging automatically whenever there is no conflict.
 
@@ -119,9 +113,11 @@ $ npx sfdx-merge-driver uninstall [--global] [--driver-name=sfdx-merge-driver]
 
 ## AUTHOR
 
-Based on code from [Amguerrero's](https://github.com/amguerrero) repository [sfdc_merge](https://github.com/amguerrero/sfdc_merge)
+Written by [jayree](https://github.com/jayree)
 
-Installer based on code from [Zkat's](https://github.com/zkat) repository [npm-merge-driver](https://github.com/npm/npm-merge-driver)
+Based on code from [Amguerrero's](https://github.com/amguerrero) repository [sfdc_merge](https://github.com/amguerrero/sfdc_merge) and forks from [Dhanielk](https://github.com/Dhanielk/sfdc_merge) and [KevinGossentCap](https://github.com/KevinGossentCap/sfdc_merge).
+
+Node.js Installer framework based on code from [Zkat's](https://github.com/zkat) repository [npm-merge-driver](https://github.com/npm/npm-merge-driver)
 
 ## SEE ALSO
 

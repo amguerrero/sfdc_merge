@@ -1,7 +1,7 @@
 {
   "name": "sfdx-merge-driver",
-  "version": "0.1.0",
-  "description": "git merge driver specific for Salesforce.com Metadata (WIP)",
+  "version": "0.0.0",
+  "description": "git merge driver specific for Salesforce.com Metadata",
   "bin": "index.js",
   "main": "index.js",
   "files": [
@@ -12,29 +12,26 @@
   ],
   "man": "./sfdx-merge-driver.1",
   "scripts": {
-    "precommit": "lint-staged",
     "docs": "tail -n +2 README.md | marked-man --manual 'User Commands' --version \"$npm_package_name@$npm_package_version\" > sfdx-merge-driver.1",
-    "prerelease": "npm t",
+    "prerelease": "yarn test",
     "postrelease": "npm publish && git push --follow-tags",
     "pretest": "standard",
     "release": "standard-version",
     "test": "tap -J --coverage test/*.js"
   },
-  "repository": "https://github.com/npm/npm-merge-driver",
+  "repository": "https://github.com/jayree/sfdx-merge-driver",
   "keywords": [
     "sfdx",
+    "salesforce",
+    "metadata",
     "git",
     "merge",
     "driver",
     "conflict",
     "merge conflict",
-    "resolve conflict",
-    "automerge",
-    "autoresolve"
+    "resolve conflict"
   ],
-  "author": {
-    "name": "jayree"
-  },
+  "author": "jayree @jayree",
   "license": "ISC",
   "dependencies": {
     "mkdirp": "^0.5.1",
@@ -51,6 +48,7 @@
     "eslint-plugin-standard": "4.0.1",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
+    "marked": "0.7.0",
     "marked-man": "^0.7.0",
     "nyc": "^14.1.1",
     "prettier-standard": "^15.0.1",
@@ -75,5 +73,10 @@
   "bundleDependencies": [
     "yargs",
     "mkdirp"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }
