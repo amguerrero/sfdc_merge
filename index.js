@@ -309,6 +309,7 @@ function merge (argv) {
         } else if (!existsInAncient && !existsInOurs) {
           // Use THEIRS
           ours[uniqueNodeKey] = {
+            nodeType: localpart,
             node: node
           }
         } else {
