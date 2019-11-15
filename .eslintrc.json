@@ -13,6 +13,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "space-before-function-paren": "off",
     "no-console": "off"
   }
 }
