@@ -81,7 +81,7 @@ $ git config merge."sfdx-md-merge-driver".recursive \
     "binary"
 ```
 
-This will configure the merge driver, and configure it to run the groovy script, the merges of the metadata.
+This will configure the merge driver to run merges on the metadata files.
 
 Add the relevant attributes to `.gitattributes` or `.git/info/attributes`:
 
