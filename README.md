@@ -1,6 +1,6 @@
-<!-- [![npm](https://img.shields.io/jayree/v/sfdx-merge-driver.svg)](https://npm.im/sfdx-merge-driver) [![license](https://img.shields.io/jayree/l/sfdx-merge-driver.svg)](https://npm.im/sfdx-merge-driver) [![Travis](https://img.shields.io/travis/jayree/sfdx-merge-driver.svg)](https://travis-ci.org/jayree/sfdx-merge-driver) [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/jayree/sfdx-merge-driver?svg=true)](https://ci.appveyor.com/project/jayree/sfdx-merge-driver) [![Coverage Status](https://coveralls.io/repos/github/jayree/sfdx-merge-driver/badge.svg?branch=latest)](https://coveralls.io/github/jayree/sfdx-merge-driver?branch=latest) -->
+<!-- [![npm](https://img.shields.io/jayree/v/sfdx-md-merge-driver.svg)](https://npm.im/sfdx-md-merge-driver) [![license](https://img.shields.io/jayree/l/sfdx-md-merge-driver.svg)](https://npm.im/sfdx-md-merge-driver) [![Travis](https://img.shields.io/travis/jayree/sfdx-md-merge-driver.svg)](https://travis-ci.org/jayree/sfdx-md-merge-driver) [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/jayree/sfdx-md-merge-driver?svg=true)](https://ci.appveyor.com/project/jayree/sfdx-md-merge-driver) [![Coverage Status](https://coveralls.io/repos/github/jayree/sfdx-md-merge-driver/badge.svg?branch=latest)](https://coveralls.io/github/jayree/sfdx-md-merge-driver?branch=latest) -->
 
-# sfdx-merge-driver(1) -- Salesforce Metadata Specific Git Merge Driver
+# sfdx-md-merge-driver(1) -- Salesforce Metadata Specific Git Merge Driver
 
 This is a git merge driver specific for Salesforce.com Metadata (Profiles, Permission Sets, Custom Labels).
 
@@ -13,14 +13,14 @@ In the case of a node being modified in our local workspace and in the branch we
 To start using it right away:
 
 ```
-$ npx sfdx-merge-driver install --global
+$ npx sfdx-md-merge-driver install --global
 ```
 
 **Or** install it locally, per-project:
 
 ```
 $ cd /path/to/git/repository
-$ npx sfdx-merge-driver install
+$ npx sfdx-md-merge-driver install
 ```
 
 ...And you're good to go!
@@ -31,7 +31,7 @@ don't need to do anything else. -->
 ### Example
 
 ```
-$ npx sfdx-merge-driver install
+$ npx sfdx-md-merge-driver install
 $ git merge my-conflicting-branch
 Conflicts Found: 2
 Conflicts Found: 0
@@ -47,7 +47,7 @@ have specific needs.
 
 #### Setup Options
 
-`sfdx-merge-driver install` supports a couple of config options:
+`sfdx-md-merge-driver install` supports a couple of config options:
 
 `--driver` - string to install as the driver in the git configuration
 
@@ -59,25 +59,25 @@ have specific needs.
 
 To avoid regular `npx` installs, consider installing the driver:
 
-`$ yarn [global|--dev] add sfdx-merge-driver`
+`$ yarn [global|--dev] add sfdx-md-merge-driver`
 
 #### Manual Setup (advanced):
 
-`sfdx-merge-driver` requires two git configurations to work: a git configuration
+`sfdx-md-merge-driver` requires two git configurations to work: a git configuration
 to add the driver to git, which is by default your local `.git/config` file, and
 a `gitattributes(5)` configuration, which is by default your local
 `.git/info/attributes`.
 
-If you **do not** want `sfdx-merge-driver` to install itself for you:
+If you **do not** want `sfdx-md-merge-driver` to install itself for you:
 
 Add the driver to `.git/config`:
 
 ```
-$ git config merge."sfdx-merge-driver".name \
+$ git config merge."sfdx-md-merge-driver".name \
     "A custom merge driver for Salesforce profiles"
-$ git config merge."sfdx-merge-driver".driver \
-    "npx sfdx-merge-driver merge %O %A %B %P"
-$ git config merge."sfdx-merge-driver".recursive \
+$ git config merge."sfdx-md-merge-driver".driver \
+    "npx sfdx-md-merge-driver merge %O %A %B %P"
+$ git config merge."sfdx-md-merge-driver".recursive \
     "binary"
 ```
 
@@ -86,12 +86,12 @@ This will configure the merge driver, and configure it to run the groovy script,
 Add the relevant attributes to `.gitattributes` or `.git/info/attributes`:
 
 ```
-*.profile merge=sfdx-merge-driver
-*.profile-meta.xml merge=sfdx-merge-driver
-*.permissionset merge=sfdx-merge-driver
-*.permissionset-meta.xml merge=sfdx-merge-driver
-*.labels merge=sfdx-merge-driver
-*.labels-meta.xml merge=sfdx-merge-driver
+*.profile merge=sfdx-md-merge-driver
+*.profile-meta.xml merge=sfdx-md-merge-driver
+*.permissionset merge=sfdx-md-merge-driver
+*.permissionset-meta.xml merge=sfdx-md-merge-driver
+*.labels merge=sfdx-md-merge-driver
+*.labels-meta.xml merge=sfdx-md-merge-driver
 ```
 
 This will instruct git that all the Salesforce files should be merged using the new merge drivers.
@@ -105,10 +105,10 @@ If a node type is not configured there, the merge driver will choose the one in 
 
 #### Uninstalling
 
-To remove an installed merge driver, use `sfdx-merge-driver uninstall`:
+To remove an installed merge driver, use `sfdx-md-merge-driver uninstall`:
 
 ```
-$ npx sfdx-merge-driver uninstall [--global] [--driver-name=sfdx-merge-driver]
+$ npx sfdx-md-merge-driver uninstall [--global] [--driver-name=sfdx-md-merge-driver]
 ```
 
 ## AUTHOR

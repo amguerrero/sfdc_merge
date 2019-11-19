@@ -35,13 +35,13 @@ function parseArgs () {
         },
         driver: {
           type: 'string',
-          default: 'npx sfdx-merge-driver merge %O %A %B %P',
+          default: 'npx sfdx-md-merge-driver merge %O %A %B %P',
           description:
             'string to install as the driver in the git configuration'
         },
         'driver-name': {
           type: 'string',
-          default: 'sfdx-merge-driver',
+          default: 'sfdx-md-merge-driver',
           description:
             'String to use as the merge driver name in your configuration.'
         },
@@ -71,7 +71,7 @@ function parseArgs () {
         },
         'driver-name': {
           type: 'string',
-          default: 'sfdx-merge-driver',
+          default: 'sfdx-md-merge-driver',
           description:
             'String to use as the merge driver name in your configuration.'
         }
@@ -88,7 +88,7 @@ function parseArgs () {
     .alias('version', 'v')
     .help()
     .alias('help', 'h')
-    .epilogue('For the full documentation, see sfdx-merge-driver(1)')
+    .epilogue('For the full documentation, see sfdx-md-merge-driver(1)')
     .demandCommand().argv
 }
 
@@ -127,7 +127,7 @@ function install (argv) {
   attrContents += '\n'
   fs.writeFileSync(attrFile, attrContents)
   console.error(
-    'sfdx-merge-driver:',
+    'sfdx-md-merge-driver:',
     argv.driverName,
     'installed to `git config',
     opts + '`',
@@ -204,7 +204,7 @@ function merge (argv) {
   const oursNodes = md.getNodes(argv['%A']) // current version of the conflicting file
   const theirsNodes = md.getNodes(argv['%B']) // other branch's version of the conflicting file
 
-  console.error('sfdx-merge-driver: merging', argv['%P'])
+  console.error('sfdx-md-merge-driver: merging', argv['%P'])
 
   const ancient = []
   Object.keys(ancientNodes).forEach(localpart => {
@@ -396,7 +396,7 @@ function merge (argv) {
     console.error('Conflicts Found: ' + conflictCounter)
     process.exit(conflictCounter)
   } else {
-    console.error('sfdx-merge-driver:', argv['%P'], 'successfully merged.')
+    console.error('sfdx-md-merge-driver:', argv['%P'], 'successfully merged.')
     process.exit(0)
   }
 }

@@ -1,25 +1,25 @@
 {
-  "name": "sfdx-merge-driver",
+  "name": "sfdx-md-merge-driver",
   "version": "0.0.0",
   "description": "git merge driver specific for Salesforce.com Metadata",
   "bin": "index.js",
   "main": "index.js",
   "files": [
     "*.js",
-    "sfdx-merge-driver.1",
+    "sfdx-md-merge-driver.1",
     "/lib",
     "/conf"
   ],
-  "man": "./sfdx-merge-driver.1",
+  "man": "./sfdx-md-merge-driver.1",
   "scripts": {
-    "docs": "tail -n +2 README.md | marked-man --manual 'User Commands' --version \"$npm_package_name@$npm_package_version\" > sfdx-merge-driver.1",
+    "docs": "tail -n +2 README.md | marked-man --manual 'User Commands' --version \"$npm_package_name@$npm_package_version\" > sfdx-md-merge-driver.1",
     "prerelease": "yarn test",
     "postrelease": "npm publish && git push --follow-tags",
     "pretest": "standard",
     "release": "standard-version",
     "test": "tap -J --coverage test/*.js"
   },
-  "repository": "https://github.com/jayree/sfdx-merge-driver",
+  "repository": "https://github.com/jayree/sfdx-md-merge-driver",
   "keywords": [
     "sfdx",
     "salesforce",

@@ -1,4 +1,4 @@
 /node_modules
 /.nyc_output
 /test/cache
-/sfdx-merge-driver.1
+/sfdx-md-merge-driver.1
