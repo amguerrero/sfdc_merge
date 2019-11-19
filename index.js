@@ -194,7 +194,11 @@ function findAttributes (argv) {
 }
 
 function merge (argv) {
-  const md = new (require('./lib/mdmerger'))(argv['%O'], argv['%A'], argv['%B'])
+  const md = new (require('./lib/metadataMerger'))(
+    argv['%O'],
+    argv['%A'],
+    argv['%B']
+  )
   const base = md.getBaseNodes()
   const ancientNodes = md.getNodes(argv['%O']) // ancestor’s version of the conflicting file
   const oursNodes = md.getNodes(argv['%A']) // current version of the conflicting file
