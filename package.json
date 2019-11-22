@@ -7,7 +7,7 @@
   "files": [
     "*.js",
     "sfdx-md-merge-driver.1",
-    "/lib",
+    "/utils",
     "/conf"
   ],
   "man": "./sfdx-md-merge-driver.1",
@@ -17,7 +17,9 @@
     "postrelease": "npm publish && git push --follow-tags",
     "pretest": "standard",
     "release": "standard-version",
-    "test": "tap -J --coverage test/*.js"
+    "test": "tap -J --coverage test/*.js",
+    "install": "node ./index install",
+    "uninstall": "node ./index uninstall"
   },
   "repository": "https://github.com/jayree/sfdx-md-merge-driver",
   "keywords": [
@@ -35,6 +37,7 @@
   "license": "ISC",
   "dependencies": {
     "mkdirp": "^0.5.1",
+    "pkg-dir": "4.2.0",
     "shelljs": "0.8.3",
     "xml2js": "0.4.22",
     "yargs": "^15.0.2"
@@ -54,7 +57,7 @@
     "prettier-standard": "^15.0.1",
     "standard": "^14.3.1",
     "standard-version": "^7.0.1",
-    "tap": "^14.9.2"
+    "tap": "^14.10.1"
   },
   "config": {
     "nyc": {

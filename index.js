@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 
-const cp = require('child_process')
+var shell = require('shelljs')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
 const path = require('path')
@@ -12,6 +12,9 @@ const builder = new xml2js.Builder({
   xmldec: { version: '1.0', encoding: 'UTF-8' },
   xmlns: true
 })
+
+const PackageJson = require('./utils/package-json')
+const pjson = new PackageJson()
 
 // eslint-disable-next-line no-extend-native
 String.prototype.replaceAll = function (search, replacement) {
@@ -93,75 +96,98 @@ function parseArgs () {
 }
 
 function install (argv) {
-  const attrFile = findAttributes(argv).replace(
-    /^\s*~\//,
-    process.env.HOME + '/'
-  )
-  const opts = argv.global ? '--global' : '--local'
-  cp.execSync(
-    `git config ${opts} merge."${
-      argv.driverName
-    }".name "A custom merge driver for Salesforce profiles"`
-  )
-  cp.execSync(
-    `git config ${opts} merge."${argv.driverName}".driver "${argv.driver}"`
-  )
-  cp.execSync(`git config ${opts} merge."${argv.driverName}".recursive binary`)
-  mkdirp.sync(path.dirname(attrFile))
-  let attrContents = ''
-  try {
-    const RE = new RegExp(`.* merge\\s*=\\s*${argv.driverName}$`)
-    attrContents = fs
-      .readFileSync(attrFile, 'utf8')
-      .split(/\r?\n/)
-      .filter(line => !line.match(RE))
+  if (pjson.name !== 'sfdx-md-merge-driver') {
+    const attrFile = path.join(
+      pjson.path,
+      findAttributes(argv).replace(/^\s*~\//, process.env.HOME + '/')
+    )
+    const opts = argv.global ? '--global' : '--local'
+    shell.exec(
+      `git config ${opts} merge."${
+        argv.driverName
+      }".name "A custom merge driver for Salesforce profiles"`,
+      {
+        cwd: pjson.path
+      }
+    )
+    shell.exec(
+      `git config ${opts} merge."${argv.driverName}".driver "${argv.driver}"`,
+      {
+        cwd: pjson.path
+      }
+    )
+    shell.exec(
+      `git config ${opts} merge."${argv.driverName}".recursive binary`,
+      {
+        cwd: pjson.path
+      }
+    )
+    mkdirp.sync(path.dirname(attrFile))
+    let attrContents = ''
+    try {
+      const RE = new RegExp(`.* merge\\s*=\\s*${argv.driverName}$`)
+      attrContents = fs
+        .readFileSync(attrFile, 'utf8')
+        .split(/\r?\n/)
+        .filter(line => !line.match(RE))
+        .join('\n')
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+    if (attrContents && !attrContents.match(/[\n\r]$/g)) {
+      attrContents = '\n'
+    }
+    attrContents += argv.files
+      .map(f => `${f} merge=${argv.driverName}`)
       .join('\n')
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  if (attrContents && !attrContents.match(/[\n\r]$/g)) {
-    attrContents = '\n'
+    attrContents += '\n'
+    fs.writeFileSync(attrFile, attrContents)
+    console.error(
+      'sfdx-md-merge-driver:',
+      argv.driverName,
+      'installed to `git config',
+      opts + '`',
+      'and',
+      attrFile
+    )
   }
-  attrContents += argv.files
-    .map(f => `${f} merge=${argv.driverName}`)
-    .join('\n')
-  attrContents += '\n'
-  fs.writeFileSync(attrFile, attrContents)
-  console.error(
-    'sfdx-md-merge-driver:',
-    argv.driverName,
-    'installed to `git config',
-    opts + '`',
-    'and',
-    attrFile
-  )
 }
 
 function uninstall (argv) {
-  const attrFile = findAttributes(argv)
-  const opts = argv.global ? '--global' : '--local'
-  try {
-    cp.execSync(
-      `git config ${opts} --remove-section merge."${argv.driverName}"`
-    )
-  } catch (e) {
-    if (!e.message.match(/no such section/gi)) {
-      throw e
+  if (pjson.name !== 'sfdx-md-merge-driver') {
+    const attrFile = path.join(pjson.path, findAttributes(argv))
+    const opts = argv.global ? '--global' : '--local'
+    try {
+      shell.exec(
+        `git config ${opts} --remove-section merge."${argv.driverName}"`,
+        {
+          cwd: pjson.path,
+          silent: true
+        }
+      )
+    } catch (e) {}
+    let currAttrs
+    try {
+      currAttrs = fs.readFileSync(attrFile, 'utf8').split('\n')
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+    if (currAttrs) {
+      let newAttrs = ''
+      currAttrs.forEach(attr => {
+        const match = attr.match(/ merge=(.*)$/i)
+        if (!match || match[1].trim() !== argv.driverName) {
+          newAttrs += attr + '\n'
+        }
+      })
+      fs.writeFileSync(attrFile, newAttrs.trim())
     }
-  }
-  let currAttrs
-  try {
-    currAttrs = fs.readFileSync(attrFile, 'utf8').split('\n')
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  if (currAttrs) {
-    let newAttrs = ''
-    currAttrs.forEach(attr => {
-      const match = attr.match(/ merge=(.*)$/i)
-      if (!match || match[1].trim() !== argv.driverName) {
-        newAttrs += attr + '\n'
-      }
-    })
-    fs.writeFileSync(attrFile, newAttrs.trim())
+    console.error(
+      'sfdx-md-merge-driver:',
+      argv.driverName,
+      'uninstalled from `git config',
+      opts + '`',
+      'and',
+      attrFile
+    )
   }
 }
 
@@ -169,8 +195,11 @@ function findAttributes (argv) {
   let attrFile
   if (argv.global) {
     try {
-      attrFile = cp
-        .execSync('git config --global core.attributesfile')
+      attrFile = shell
+        .exec('git config --global core.attributesfile', {
+          cwd: pjson.path,
+          silent: true
+        })
         .toString('utf8')
         .trim()
       // eslint-disable-next-line no-empty
@@ -183,9 +212,11 @@ function findAttributes (argv) {
       }
     }
   } else {
-    const gitDir = cp
-      .execSync('git rev-parse --git-dir', {
-        encoding: 'utf8'
+    const gitDir = shell
+      .exec('git rev-parse --git-dir', {
+        encoding: 'utf8',
+        cwd: pjson.path,
+        silent: true
       })
       .trim()
     attrFile = path.join(gitDir, 'info', 'attributes')
@@ -194,7 +225,7 @@ function findAttributes (argv) {
 }
 
 function merge (argv) {
-  const md = new (require('./lib/metadataMerger'))(
+  const md = new (require('./utils/metadataMerger'))(
     argv['%O'],
     argv['%A'],
     argv['%B']
