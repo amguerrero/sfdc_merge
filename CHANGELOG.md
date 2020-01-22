@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/jayree/sfdx-md-merge-driver/compare/v0.1.1...v0.1.2) (2020-01-22)
+
+
+### Features
+
+* convert to typescript and oclif ([b03b4b6](https://github.com/jayree/sfdx-md-merge-driver/commit/b03b4b6d1dede2faee2c1b7f408217f33642d700))
+
 ### [0.1.1](https://github.com/jayree/sfdx-md-merge-driver/compare/v0.1.0...v0.1.1) (2019-11-22)
 
 
