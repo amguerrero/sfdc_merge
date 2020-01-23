@@ -5,6 +5,7 @@ import * as xml2js from 'xml2js'
 
 const builder = new xml2js.Builder({
   xmldec: {version: '1.0', encoding: 'UTF-8'},
+  renderOpts: {pretty: true, indent: '    ', newline: '\n'},
   xmlns: true,
 })
 
