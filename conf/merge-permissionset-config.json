@@ -15,6 +15,10 @@
     "uniqueKeys": ["name"],
     "equalKeys": ["name", "enabled"]
   },
+  "customSettingAccesses": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "enabled"]
+  },
   "description": {
     "uniqueKeys": [],
     "equalKeys": []

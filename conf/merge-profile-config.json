@@ -23,6 +23,10 @@
     "uniqueKeys": ["name"],
     "equalKeys": ["name", "enabled"]
   },
+  "customSettingAccesses": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "enabled"]
+  },
   "description": {
     "uniqueKeys": [],
     "equalKeys": []
@@ -34,6 +38,10 @@
   "fieldPermissions": {
     "uniqueKeys": ["field"],
     "equalKeys": ["field", "editable", "hidden", "readable"]
+  },
+  "fullName": {
+    "uniqueKeys": [],
+    "equalKeys": []
   },
   "layoutAssignments": {
     "exclusiveUniqueKeys": ["recordType", "layout"],
@@ -92,6 +100,10 @@
   "pageAccesses": {
     "uniqueKeys": ["apexPage"],
     "equalKeys": ["apexPage", "enabled"]
+  },
+  "profileActionOverrides" : {
+    "uniqueKeys" : [ "actionName", "type", "pageOrSobjectType", "formFactor" ],
+    "equalKeys"  : [ "actionName", "type", "pageOrSobjectType", "formFactor", "content" ]
   },
   "recordTypeVisibilities": {
     "uniqueKeys": ["recordType"],
