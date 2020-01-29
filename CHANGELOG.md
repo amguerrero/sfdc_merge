@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/jayree/sfdx-md-merge-driver/compare/v0.1.1...v0.1.3) (2020-01-29)
+
+
+### Features
+
+* convert to typescript and oclif ([b03b4b6](https://github.com/jayree/sfdx-md-merge-driver/commit/b03b4b6d1dede2faee2c1b7f408217f33642d700))
+
+
+### Bug Fixes
+
+* Adding some conf missing ([cc81e8f](https://github.com/jayree/sfdx-md-merge-driver/commit/cc81e8f2dbd6dccd74a7b6b8a8e9ca2e6ed59aa4))
+* Put xml renderOpts for strict exact output than a Salesforce retrieve ([a30a1cc](https://github.com/jayree/sfdx-md-merge-driver/commit/a30a1ccb62a81a50ccb12793cdfd8f95b4c689ee))
+
 ### [0.1.2](https://github.com/jayree/sfdx-md-merge-driver/compare/v0.1.1...v0.1.2) (2020-01-22)
 
 
