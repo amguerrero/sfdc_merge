@@ -45,7 +45,7 @@ class MetadataMerger {
       case /.*permissionset.*/.test(lines[lineToRead].toLowerCase()):
         return 'PermissionSet'
       case /.*customlabels.*/.test(lines[lineToRead].toLowerCase()):
-        return 'Labels'
+        return 'CustomLabels'
       default:
         console.error('Bad input, this metadata type not handled')
         // eslint-disable-next-line no-process-exit
@@ -59,7 +59,7 @@ class MetadataMerger {
         return '<?xml version="1.0" encoding="UTF-8"?><Profile xmlns="http://soap.sforce.com/2006/04/metadata"></Profile>'
       case 'PermissionSet':
         return '<?xml version="1.0" encoding="UTF-8"?><PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata"></PermissionSet>'
-      case 'Labels':
+      case 'CustomLabels':
         return '<?xml version="1.0" encoding="UTF-8"?><CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata"></CustomLabels>'
       default:
         return null
