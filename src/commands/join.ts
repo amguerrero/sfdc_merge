@@ -5,21 +5,15 @@ export default class Join extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
+    meta: flags.string({char: 'm', description: 'path(s) to file(s) to join', multiple: true}),
   }
 
-  static args = [{name: 'file'}]
-
   async run() {
-    const {args, flags} = this.parse(Join)
+    const {flags} = this.parse(Join)
 
-    const name = flags.name || 'world'
-    this.log(`hello ${name} from C:\\GitRepos\\sfdc_md_merge_driver\\src\\commands\\join.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
-    }
+    // const name = flags.name || 'world'
+    // this.log(`hello ${name} from C:\\GitRepos\\sfdc_md_merge_driver\\src\\commands\\join.ts`)
+
+    this.log(flags.meta)
   }
 }
