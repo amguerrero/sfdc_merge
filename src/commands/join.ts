@@ -14,6 +14,6 @@ export default class Join extends Command {
     // const name = flags.name || 'world'
     // this.log(`hello ${name} from C:\\GitRepos\\sfdc_md_merge_driver\\src\\commands\\join.ts`)
 
-    this.log(flags.meta)
+    console.log(flags.meta)
   }
 }
