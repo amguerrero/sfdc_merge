@@ -1,5 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs'
+import {getMetadataType} from '../utils/file-helper'
 
 export default class Join extends Command {
   static description = 'describe the command here'
@@ -32,5 +33,15 @@ export default class Join extends Command {
       }
     })
     console.log(flags.meta)
+    // let meta
+    // await getMetadataType(flags.meta).then(data => {
+    //   meta = data
+    // })
+    // console.log('meta: ' + meta)
+    let meta
+    await getMetadataType(flags.meta).then(result => {
+      meta = result
+    })
+    console.log('result meta:', meta)
   }
 }
