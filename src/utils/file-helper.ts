@@ -4,7 +4,6 @@ import * as es from 'event-stream'
 const regProfile = /.*<Profile xmlns/
 const regPSet = /.*<PermissionSet xmlns/
 const regLabel = /.*<CustomLabels xmlns/
-// var output
 
 async function getMetafromFile(file) {
   return new Promise((resolve, reject) => {
@@ -30,9 +29,6 @@ async function getMetafromFile(file) {
           }
         }),
       )
-      .on('end', () => {
-        resolve(output)
-      })
       .on('close', () => {
         resolve(output)
       })
