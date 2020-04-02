@@ -6,7 +6,7 @@ const regPSet = /.*<PermissionSet xmlns/
 const regLabel = /.*<CustomLabels xmlns/
 
 async function getMetafromFile(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     let output
     const s = fs
       .createReadStream(file)
@@ -41,12 +41,19 @@ export async function getMetadataType(files: string[]) {
   for (const key of files) {
     tabPromise.push(getMetafromFile(key))
   }
-  await Promise.race(tabPromise)
+  await Promise.all(tabPromise)
     .then(data => {
-      output = data
+      data = data.filter((el, i, a) => el !== undefined && i === a.indexOf(el))
+      if (data.length > 1) {
+        // eslint-disable-next-line no-throw-literal
+        throw 'multiple metadataTypes given as input'
+      }
+      output = data.filter(
+        (el, i, a) => el !== undefined && i === a.indexOf(el),
+      )[0]
     })
     .catch(error => {
-      console.log(error)
+      throw error
     })
   return output
 }

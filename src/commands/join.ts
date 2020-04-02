@@ -17,9 +17,6 @@ export default class Join extends Command {
   async run() {
     const {flags} = this.parse(Join)
 
-    // const name = flags.name || 'world'
-    // this.log(`hello ${name} from C:\\GitRepos\\sfdc_md_merge_driver\\src\\commands\\join.ts`)
-
     if (flags.meta === undefined) {
       console.log('list of permissions to merge is empty')
       // eslint-disable-next-line no-throw-literal
@@ -39,9 +36,15 @@ export default class Join extends Command {
     // })
     // console.log('meta: ' + meta)
     let meta
-    await getMetadataType(flags.meta).then(result => {
-      meta = result
-    })
+    await getMetadataType(flags.meta)
+      .then(result => {
+        meta = result
+        console.log('result meta:', meta)
+      })
+      .catch(error => {
+        console.error(error)
+        throw error
+      })
     console.log('result meta:', meta)
   }
 }
