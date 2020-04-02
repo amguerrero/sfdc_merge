@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import * as path from 'path'
 import * as es from 'event-stream'
 
 const regProfile = /.*<Profile xmlns/
@@ -31,6 +32,45 @@ async function getMetafromFile(file) {
       )
       .on('close', () => {
         resolve(output)
+      })
+  })
+}
+
+function getConfigPath(meta) {
+  return path.join(
+    __dirname,
+    '..',
+    '..',
+    '/conf/merge-' + meta.toLowerCase() + '-config.json',
+  )
+}
+
+export async function getMetaConfigJSON(meta) {
+  return new Promise(resolve => {
+    let output = ''
+    //   const s = fs
+    //     .createReadStream(getConfigPath(meta))
+    //     .pipe(es.parse())
+    //     .on('end', data => {
+    //       resolve(data)
+    //     })
+    fs.createReadStream(getConfigPath(meta))
+      .pipe(
+        es.mapSync(function(data) {
+          // console.log(data)
+          output = output.concat(data)
+        }),
+      )
+      .on('end', () => {
+        const jsonO = JSON.parse(output)
+        const result = {}
+        for (const x of Object.keys(jsonO)) {
+          result[x] =
+            jsonO[x].uniqueKeys === undefined
+              ? jsonO[x].exclusiveUniqueKeys
+              : jsonO[x].uniqueKeys
+        }
+        resolve(result)
       })
   })
 }
