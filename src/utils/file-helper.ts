@@ -14,13 +14,13 @@ const builder = new xml2js.Builder({
 })
 
 async function getMetafromFile(file) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let output
     const s = fs
       .createReadStream(file)
       .pipe(es.split())
       .pipe(
-        es.mapSync(function(line) {
+        es.mapSync(function (line) {
           switch (true) {
             case regProfile.test(line):
               output = 'Profile'
@@ -53,7 +53,7 @@ function getConfigPath(meta) {
 }
 
 export async function getMetaConfigJSON(meta) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let output = ''
     //   const s = fs
     //     .createReadStream(getConfigPath(meta))
@@ -63,7 +63,7 @@ export async function getMetaConfigJSON(meta) {
     //     })
     fs.createReadStream(getConfigPath(meta))
       .pipe(
-        es.mapSync(function(data) {
+        es.mapSync(function (data) {
           // console.log(data)
           output = output.concat(data)
         }),
@@ -89,7 +89,7 @@ export async function getMetadataType(files: string[]) {
     tabPromise.push(getMetafromFile(key))
   }
   await Promise.all(tabPromise)
-    .then(data => {
+    .then((data) => {
       data = data.filter((el, i, a) => el !== undefined && i === a.indexOf(el))
       if (data.length > 1) {
         // eslint-disable-next-line no-throw-literal
@@ -99,7 +99,7 @@ export async function getMetadataType(files: string[]) {
         (el, i, a) => el !== undefined && i === a.indexOf(el),
       )[0]
     })
-    .catch(error => {
+    .catch((error) => {
       throw error
     })
   return output
@@ -162,15 +162,15 @@ async function getNodes2(file, meta) {
   })
 } */
 
-async function getNodes3(file, meta) {
-  return new Promise(resolve => {
+export async function getNodes(file) {
+  return new Promise((resolve) => {
     let output = ''
     if (fs.statSync(file).size === 0) {
       resolve({})
     } else {
       fs.createReadStream(file)
         .pipe(
-          es.mapSync(function(data) {
+          es.mapSync(function (data) {
             // console.log(data)
             output = output.concat(data)
           }),
@@ -178,7 +178,7 @@ async function getNodes3(file, meta) {
         .on('end', () => {
           // if (output.length > 0) {
           xml2js.parseString(output, (e, r) => {
-            resolve(r[meta])
+            resolve(r)
           })
           // } else {
           //   resolve({})
@@ -186,10 +186,19 @@ async function getNodes3(file, meta) {
           // resolve(result)
         })
     }
-  }).then(result => {
+  }).then((result) => {
     // console.log(JSON.stringify(result["applicationVisibilities"]))
     // result["_fileName"] = file
     return result
+  })
+}
+
+async function getNodes3(file, meta) {
+  return getNodes(file).then((result) => {
+    if (result[meta]) {
+      return result[meta]
+    }
+    return {}
   })
 }
 
@@ -200,10 +209,10 @@ export async function getFiles(files: string[], meta) {
     tabPromise.push(getNodes3(key, meta))
   }
   await Promise.all(tabPromise)
-    .then(data => {
+    .then((data) => {
       output = data
     })
-    .catch(error => {
+    .catch((error) => {
       throw error
     })
   return output
@@ -211,6 +220,10 @@ export async function getFiles(files: string[], meta) {
 
 export async function writeOutput(meta, file, jsonOutput) {
   const base = getNodeBaseJSON(meta)
-  Object.assign(base[meta], jsonOutput)
-  fs.writeFileSync(file, builder.buildObject(base))
+  base[meta] = jsonOutput
+  if (file !== undefined && file !== '') {
+    fs.writeFileSync(file, builder.buildObject(base))
+  } else {
+    console.log('joined:', JSON.stringify(base))
+  }
 }
