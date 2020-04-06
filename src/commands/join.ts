@@ -6,9 +6,10 @@ import {
   getFiles,
   writeOutput,
 } from '../utils/file-helper'
+import {addVerboseInfo, printVerboseInfo} from '../utils/verbose-helper'
 
 export default class Join extends Command {
-  static description = 'describe the command here'
+  static description = 'Additionally merge the files of same metadataType'
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -45,8 +46,8 @@ export default class Join extends Command {
         throw `${permission} is not accessible`
       }
     })
-    let stepEnd = Date.now()
-    verboseTab.push({'input check time:': stepEnd - stepStart})
+    if (flags.verbose)
+      addVerboseInfo(verboseTab, stepStart, 'input check time:')
 
     stepStart = Date.now()
     let meta
@@ -59,8 +60,8 @@ export default class Join extends Command {
         console.error(error)
         throw error
       })
-    stepEnd = Date.now()
-    verboseTab.push({'get metadaType time:': stepEnd - stepStart})
+    if (flags.verbose)
+      addVerboseInfo(verboseTab, stepStart, 'get metadaType time:')
 
     stepStart = Date.now()
     let configJson
@@ -72,16 +73,14 @@ export default class Join extends Command {
         console.error(error)
         throw error
       })
-    stepEnd = Date.now()
-    verboseTab.push({'get config time: ': stepEnd - stepStart})
+    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'get config time:')
 
     stepStart = Date.now()
     let fileJSON
     await getFiles(flags.meta, meta).then(result => {
       fileJSON = result
     })
-    stepEnd = Date.now()
-    verboseTab.push({'get files time:': stepEnd - stepStart})
+    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'get files time:')
 
     stepStart = Date.now()
     function joinUniques(ours, theirs, attributs) {
@@ -144,20 +143,12 @@ export default class Join extends Command {
       return acc
     }
     const merged = fileJSON.reduce(reducer, {})
-    stepEnd = Date.now()
-    verboseTab.push({'join time:': stepEnd - stepStart})
+    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'join time:')
 
     stepStart = Date.now()
     await writeOutput(meta, flags.output, merged)
-    stepEnd = Date.now()
-    verboseTab.push({'writing time:': stepEnd - stepStart})
+    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'writing time:')
 
-    const tEnd = Date.now()
-    if (flags.verbose) {
-      for (const elem of verboseTab) {
-        console.log(Object.keys(elem)[0], Object.values(elem)[0])
-      }
-      console.log('teatment time:', tEnd - tStart)
-    }
+    if (flags.verbose) printVerboseInfo(verboseTab, tStart)
   }
 }
