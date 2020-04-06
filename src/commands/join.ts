@@ -6,6 +6,7 @@ import {
   getFiles,
   writeOutput,
 } from '../utils/file-helper'
+import {joinUniques, joinExclusives} from '../utils/merge-helper'
 import {addVerboseInfo, printVerboseInfo} from '../utils/verbose-helper'
 
 export default class Join extends Command {
@@ -39,7 +40,7 @@ export default class Join extends Command {
       // eslint-disable-next-line no-throw-literal
       throw 'list of permissions to merge is empty'
     }
-    flags.meta.forEach(permission => {
+    flags.meta.forEach((permission) => {
       if (!fs.existsSync(permission)) {
         console.error(`${permission} is not accessible`)
         // eslint-disable-next-line no-throw-literal
@@ -52,11 +53,11 @@ export default class Join extends Command {
     stepStart = Date.now()
     let meta
     await getMetadataType(flags.meta)
-      .then(result => {
+      .then((result) => {
         meta = result
         verboseTab.push({'meta to join:': meta})
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error)
         throw error
       })
@@ -66,10 +67,10 @@ export default class Join extends Command {
     stepStart = Date.now()
     let configJson
     await getMetaConfigJSON(meta)
-      .then(result => {
+      .then((result) => {
         configJson = result
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error)
         throw error
       })
@@ -77,61 +78,29 @@ export default class Join extends Command {
 
     stepStart = Date.now()
     let fileJSON
-    await getFiles(flags.meta, meta).then(result => {
+    await getFiles(flags.meta, meta).then((result) => {
       fileJSON = result
     })
     if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'get files time:')
 
     stepStart = Date.now()
-    function joinUniques(ours, theirs, attributs) {
-      ours
-        .filter(
-          x =>
-            !theirs.find(
-              y =>
-                attributs.reduce(
-                  (acc, attribut) => `${acc}${JSON.stringify(x[attribut])}#`,
-                  '',
-                ) ===
-                attributs.reduce(
-                  (acc, attribut) => `${acc}${JSON.stringify(y[attribut])}#`,
-                  '',
-                ),
-            ),
-        )
-        .concat(theirs)
-    }
-    function joinExclusives(ours, theirs, attributs) {
-      ours
-        .filter(
-          x =>
-            !theirs.find(
-              y =>
-                Array.of(attributs.find(att => y[att])).reduce(
-                  (acc, attribut) => `${acc}${JSON.stringify(x[attribut])}#`,
-                  '',
-                ) ===
-                Array.of(attributs.find(att => y[att])).reduce(
-                  (acc, attribut) => `${acc}${JSON.stringify(y[attribut])}#`,
-                  '',
-                ),
-            ),
-        )
-        .concat(theirs)
-    }
-    const reducer = function(acc, curr) {
+    const reducer = function (acc, curr) {
       // first loop we will use the current Permission => no merge required :D
       if (Object.entries(acc).length === 0 && acc.constructor === Object) {
         return curr
       }
-      Object.keys(curr).forEach(p => {
+      Object.keys(curr).forEach((p) => {
         if (configJson.uniqueKeys && configJson.uniqueKeys[p]) {
-          joinUniques(acc[p] || [], curr[p] || [], configJson.uniqueKeys[p])
+          acc[p] = joinUniques(
+            acc[p] || [],
+            curr[p] || [],
+            configJson.uniqueKeys[p],
+          )
         } else if (
           configJson.exclusiveUniqueKeys &&
           configJson.exclusiveUniqueKeys[p]
         ) {
-          joinExclusives(
+          acc[p] = joinExclusives(
             acc[p] || [],
             curr[p] || [],
             configJson.exclusiveUniqueKeys[p],
