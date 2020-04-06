@@ -2,6 +2,7 @@
   "extends": ["oclif", "oclif-typescript"],
   "rules": {
     "space-before-function-paren": "off",
+    "arrow-parens": "off",
     "indent": "off",
     "operator-linebreak": "off",
     "node/no-missing-require": [
