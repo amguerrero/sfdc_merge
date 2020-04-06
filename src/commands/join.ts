@@ -119,5 +119,6 @@ export default class Join extends Command {
     if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'writing time:')
 
     if (flags.verbose) printVerboseInfo(verboseTab, tStart)
+    console.error('sfdx-md-merge-driver:', 'successfully joined.')
   }
 }
