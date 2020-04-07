@@ -1,12 +1,12 @@
 {
-  "name": "sfdx-md-merge-driver",
+  "name": "@KevinGossentCap/sfdx-md-merge-driver",
   "version": "0.1.4",
   "description": "git merge driver specific for Salesforce.com Metadata",
-  "author": "jayree @jayree",
+  "author": "KevinGossentCap @KevinGossentCap",
   "bin": {
     "sfdx-md-merge-driver": "./bin/run"
   },
-  "bugs": "https://github.com/jayree/sfdx-md-merge-driver/issues",
+  "bugs": "https://github.com/KevinGossentCap/sfdx-md-merge-driver/issues",
   "man": "./sfdx-md-merge-driver.1",
   "dependencies": {
     "@oclif/command": "^1.5.19",
@@ -65,7 +65,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/jayree/sfdx-md-merge-driver",
+  "homepage": "https://github.com/KevinGossentCap/sfdx-md-merge-driver",
   "keywords": [
     "sfdx",
     "salesforce",
@@ -87,7 +87,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "jayree/sfdx-md-merge-driver",
+  "repository": "KevinGossentCap/sfdx-md-merge-driver",
   "scripts": {
     "docs": "tail -n +2 README.md | marked-man --manual 'User Commands' --version \"$npm_package_name@$npm_package_version\" > sfdx-md-merge-driver.1",
     "prerelease": "yarn test",
@@ -95,9 +95,9 @@
     "release": "standard-version",
     "uninstall": "node ./bin/run uninstall",
     "install": "node ./bin/run install",
-    "postpack": "rm -f oclif.manifest.json",
+    "postpack": "npx shx rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "npx shx rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "yarn prepack && nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
