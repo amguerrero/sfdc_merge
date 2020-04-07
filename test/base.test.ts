@@ -19,17 +19,21 @@ class AutocompleteTest extends MergeDriverBase {
   }
 }
 
-const root = path.resolve(__dirname, '../../package.json')
+const root = path.resolve(__dirname, path.join('..', '..', 'package.json'))
 const config = new Config({root})
 
 const cmd = new AutocompleteTest([], config)
 
 describe('MergeDriverBase', () => {
   it('#findAttributes (global)', async () => {
-    expect(cmd.findAttributes(true, '.')).to.contains('.config/git/attributes')
+    expect(cmd.findAttributes(true, '.')).to.contains(
+      path.join('.config', 'git', 'attributes'),
+    )
   })
 
   it('#findAttributes (local)', async () => {
-    expect(cmd.findAttributes(false, '.')).to.eq('.git/info/attributes')
+    expect(cmd.findAttributes(false, '.')).to.eq(
+      path.join('.git', 'info', 'attributes'),
+    )
   })
 })

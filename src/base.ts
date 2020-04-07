@@ -20,7 +20,16 @@ export abstract class MergeDriverBase extends Command {
         // if (process.env.XDG_CONFIG_HOME) {
         // attrFile = path.join(process.env.XDG_CONFIG_HOME, 'git', 'attributes')
         // } else {
-        attrFile = path.join(process.env.HOME, '.config', 'git', 'attributes')
+        if (process.env.HOME === undefined) {
+          attrFile = path.join(
+            process.env.USERPROFILE,
+            '.config',
+            'git',
+            'attributes',
+          )
+        } else {
+          attrFile = path.join(process.env.HOME, '.config', 'git', 'attributes')
+        }
         // }
       }
     } else {
