@@ -23,10 +23,6 @@ async function fileExists(file) {
       }
       resolve(true)
     })
-    // } catch (error) {
-    //   console.error(`${file} is not accessible`)
-    //   resolve(false)
-    // }
   })
 }
 
@@ -84,12 +80,6 @@ function getConfigPath(meta) {
 export async function getMetaConfigJSON(meta) {
   return new Promise((resolve) => {
     let output = ''
-    //   const s = fs
-    //     .createReadStream(getConfigPath(meta))
-    //     .pipe(es.parse())
-    //     .on('end', data => {
-    //       resolve(data)
-    //     })
     fs.createReadStream(getConfigPath(meta))
       .pipe(
         es.mapSync(function (data) {
@@ -147,7 +137,6 @@ function getNodeBaseJSON(meta) {
     default:
       result[meta] = {$: {xmlns: 'http://soap.sforce.com/2006/04/metadata'}}
       return result
-    // return JSON.parse('{"' + meta + '":{ "$": { "xmlns": "http://soap.sforce.com/2006/04/metadata" }}}')
   }
 }
 
@@ -200,24 +189,16 @@ export async function getNodes(file) {
       fs.createReadStream(file)
         .pipe(
           es.mapSync(function (data) {
-            // console.log(data)
             output = output.concat(data)
           }),
         )
         .on('end', () => {
-          // if (output.length > 0) {
           xml2js.parseString(output, (e, r) => {
             resolve(r)
           })
-          // } else {
-          //   resolve({})
-          // }
-          // resolve(result)
         })
     }
   }).then((result) => {
-    // console.log(JSON.stringify(result["applicationVisibilities"]))
-    // result["_fileName"] = file
     return result
   })
 }

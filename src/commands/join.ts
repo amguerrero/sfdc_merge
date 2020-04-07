@@ -39,35 +39,12 @@ export default class Join extends Command {
       console.error('list of permissions to merge is empty')
       if (flags.verbose) printVerboseInfo(verboseTab, tStart)
       return ''
-      // eslint-disable-next-line no-throw-literal
-      // throw 'list of permissions to merge is empty'
     }
     if (!(await allFilesExist(flags.meta))) {
       console.error('at least a metadataFile is not accessible')
       if (flags.verbose) printVerboseInfo(verboseTab, tStart)
       return ''
     }
-    // flags.meta.forEach((permission) => {
-    //   console.log('test file', permission)
-    //   // try {
-    //   //   fs.access(permission, error => {
-    //   //     if (error) {
-    //   //       console.log(`${permission} is not accessible1`)
-    //   //       return ''
-    //   //     }
-    //   //   })
-    //   // } catch (error) {
-    //   //   console.log(`${permission} is not accessible2`)
-    //   //   return ''
-    //   // }
-    //   if (!fs.existsSync(permission)) {
-    //     console.log(`${permission} is not accessible`)
-    //     return ''
-    //     // eslint-disable-next-line no-throw-literal
-    //     // throw `${permission} is not accessible`
-    //   }
-    // })
-    console.log('after files')
     if (flags.verbose)
       addVerboseInfo(verboseTab, stepStart, 'input check time:')
 

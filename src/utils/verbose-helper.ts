@@ -3,11 +3,8 @@ export function addVerboseInfo(
   stepStart: number,
   strStep: string,
 ): void {
-  // Object.defineProperty({}, strStep, Date.now() - stepStart)
   const obj = {}
   obj[strStep] = Date.now() - stepStart
-  // const time = Date.now() - stepStart
-  // return verboseTab.push(Object.defineProperty(obj, strStep, {value: time}))
   verboseTab.push(obj)
 }
 
