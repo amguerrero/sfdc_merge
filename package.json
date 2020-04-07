@@ -94,7 +94,7 @@
     "postrelease": "npm publish && git push --follow-tags",
     "release": "standard-version",
     "uninstall": "node ./bin/run uninstall",
-    "install": "npx -p shx -p typescript -c 'shx rm -rf lib && tsc -b' && node ./bin/run install",
+    "install": "npx -p shx shx rm -rf lib && npx -p typescript tsc -b && node ./bin/run install",
     "postpack": "npx shx rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts",
     "prepack": "npx shx rm -rf lib && npx -p typescript tsc -b && oclif-dev manifest && oclif-dev readme",
