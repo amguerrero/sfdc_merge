@@ -13,6 +13,35 @@ const builder = new xml2js.Builder({
   xmlns: true,
 })
 
+async function fileExists(file) {
+  return new Promise((resolve) => {
+    // try {
+    fs.access(file, fs.constants.F_OK, (error) => {
+      if (error) {
+        console.error(`${file} is not accessible`)
+        resolve(false)
+      }
+      resolve(true)
+    })
+    // } catch (error) {
+    //   console.error(`${file} is not accessible`)
+    //   resolve(false)
+    // }
+  })
+}
+
+export async function allFilesExist(files: string[]) {
+  const tabPromise = []
+  let output
+  for (const key of files) {
+    tabPromise.push(fileExists(key))
+  }
+  await Promise.all(tabPromise).then((data) => {
+    output = !data.includes(false)
+  })
+  return output
+}
+
 async function getMetafromFile(file) {
   return new Promise((resolve) => {
     let output
