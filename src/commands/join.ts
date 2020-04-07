@@ -1,10 +1,10 @@
 import {Command, flags} from '@oclif/command'
-import * as fs from 'fs'
 import {
   getMetadataType,
   getMetaConfigJSON,
   getFiles,
   writeOutput,
+  allFilesExist,
 } from '../utils/file-helper'
 import {joinUniques, joinExclusives} from '../utils/merge-helper'
 import {addVerboseInfo, printVerboseInfo} from '../utils/verbose-helper'
@@ -36,17 +36,15 @@ export default class Join extends Command {
 
     let stepStart = Date.now()
     if (flags.meta === undefined) {
-      console.log('list of permissions to merge is empty')
-      // eslint-disable-next-line no-throw-literal
-      throw 'list of permissions to merge is empty'
+      console.error('list of permissions to merge is empty')
+      if (flags.verbose) printVerboseInfo(verboseTab, tStart)
+      return ''
     }
-    flags.meta.forEach((permission) => {
-      if (!fs.existsSync(permission)) {
-        console.error(`${permission} is not accessible`)
-        // eslint-disable-next-line no-throw-literal
-        throw `${permission} is not accessible`
-      }
-    })
+    if (!(await allFilesExist(flags.meta))) {
+      console.error('at least a metadataFile is not accessible')
+      if (flags.verbose) printVerboseInfo(verboseTab, tStart)
+      return ''
+    }
     if (flags.verbose)
       addVerboseInfo(verboseTab, stepStart, 'input check time:')
 
