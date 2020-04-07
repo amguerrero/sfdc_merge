@@ -1,6 +1,7 @@
+/* eslint-disable unicorn/no-process-exit, no-process-exit */
 import {expect, test} from '@oclif/test'
 import * as shell from 'shelljs'
-import {getNodes} from '../../src/utils/file-helper'
+import * as path from 'path'
 
 describe('join', () => {
   afterEach(function () {
@@ -16,15 +17,15 @@ describe('join', () => {
     .command([
       'join',
       '-m',
-      './test/files/ancestor.profile-meta.xml',
+      path.join('.', 'test', 'files', 'ancestor.profile-meta.xml'),
       '-m',
-      './test/files/ours.profile-meta.xml',
+      path.join('.', 'test', 'files', 'ours.profile-meta.xml'),
       '-m',
-      './test/files/theirs.profile-meta.xml',
+      path.join('.', 'test', 'files', 'theirs.profile-meta.xml'),
     ])
     .it('runs join', (ctx) => {
       expect(process.exit()).to.equal('foobar')
       expect(ctx.stderr).to.contain('successfully joined')
-      expect(ctx.stdout).equals(strJoin)
+      expect(ctx.stdout).to.contain(strJoin)
     })
 })
