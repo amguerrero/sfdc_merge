@@ -41,7 +41,6 @@ describe('join', () => {
     })
 
   test
-    .timeout(10000)
     .stub(process, 'exit', () => 'foobar')
     .stderr()
     .command([
