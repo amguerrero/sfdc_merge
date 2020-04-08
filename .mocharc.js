@@ -10,4 +10,5 @@ module.exports = {
     recursive: true,
     reporter: 'spec',
     timeout: 10000,
+    slow: 0,
 };
