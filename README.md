@@ -58,11 +58,11 @@ To avoid regular `npx` installs, consider installing the driver:
 
 <!-- usage -->
 ```sh-session
-$ npm install -g @KevinGossentCap/sfdx-md-merge-driver
+$ npm install -g @kgossent/sfdx-md-merge-driver
 $ sfdx-md-merge-driver COMMAND
 running command...
 $ sfdx-md-merge-driver (-v|--version|version)
-@KevinGossentCap/sfdx-md-merge-driver/0.1.4 win32-x64 node-v12.16.1
+@kgossent/sfdx-md-merge-driver/0.1.6 win32-x64 node-v12.16.1
 $ sfdx-md-merge-driver --help [COMMAND]
 USAGE
   $ sfdx-md-merge-driver COMMAND
@@ -136,7 +136,7 @@ OPTIONS
       Filenames that will trigger this driver.
 ```
 
-_See code: [src\commands\install.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.4/src\commands\install.ts)_
+_See code: [src\commands\install.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.6/src\commands\install.ts)_
 
 ## `sfdx-md-merge-driver join`
 
@@ -153,7 +153,7 @@ OPTIONS
   -v, --verbose        verbose mode
 ```
 
-_See code: [src\commands\join.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.4/src\commands\join.ts)_
+_See code: [src\commands\join.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.6/src\commands\join.ts)_
 
 ## `sfdx-md-merge-driver merge %O %A %B [%P]`
 
@@ -173,7 +173,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src\commands\merge.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.4/src\commands\merge.ts)_
+_See code: [src\commands\merge.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.6/src\commands\merge.ts)_
 
 ## `sfdx-md-merge-driver uninstall`
 
@@ -189,7 +189,7 @@ OPTIONS
   -n, --name=name  [default: sfdx-md-merge-driver] String to use as the merge driver name in your configuration.
 ```
 
-_See code: [src\commands\uninstall.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.4/src\commands\uninstall.ts)_
+_See code: [src\commands\uninstall.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.6/src\commands\uninstall.ts)_
 <!-- commandsstop -->
 
 # Author

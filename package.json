@@ -1,8 +1,8 @@
 {
-  "name": "@KevinGossentCap/sfdx-md-merge-driver",
-  "version": "0.1.4",
+  "name": "@kgossent/sfdx-md-merge-driver",
+  "version": "0.1.6",
   "description": "git merge driver specific for Salesforce.com Metadata",
-  "author": "KevinGossentCap @KevinGossentCap",
+  "author": "KevinGossent @kgossent",
   "bin": {
     "sfdx-md-merge-driver": "./bin/run"
   },
@@ -94,7 +94,7 @@
     "postrelease": "npm publish && git push --follow-tags",
     "release": "standard-version",
     "uninstall": "node ./bin/run uninstall",
-    "install": "npx -p shx shx rm -rf lib && npx -p typescript tsc -b && node ./bin/run install",
+    "install": "node ./bin/run install",
     "postpack": "npx shx rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts",
     "prepack": "npx shx rm -rf lib && npx -p typescript tsc -b && oclif-dev manifest && oclif-dev readme",
