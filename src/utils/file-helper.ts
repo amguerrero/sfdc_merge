@@ -3,9 +3,7 @@ import * as path from 'path'
 import * as es from 'event-stream'
 import * as xml2js from 'xml2js'
 
-// const regProfile = /.*<Profile xmlns/
-// const regPSet = /.*<PermissionSet xmlns/
-// const regLabel = /.*<CustomLabels xmlns/
+const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
 
 const builder = new xml2js.Builder({
   xmldec: {version: '1.0', encoding: 'UTF-8'},
@@ -46,26 +44,11 @@ async function getMetafromFile(file) {
       .pipe(es.split())
       .pipe(
         es.mapSync(function (line) {
-          const match = line.match(/(?<=<)(\w+)(?= +xmlns)/)
+          const match = line.match(regGenericMatch)
           if (match !== null) {
-            // console.log('Test regexp match', line.match(/(?<=<)(\w+)(?= +xmlns)/))
             output = match[0]
             s.destroy()
           }
-          // switch (true) {
-          //   case regProfile.test(line):
-          //     output = 'Profile'
-          //     s.destroy()
-          //     break
-          //   case regPSet.test(line):
-          //     output = 'PermissionSet'
-          //     s.destroy()
-          //     break
-          //   case regLabel.test(line):
-          //     output = 'CustomLabels'
-          //     s.destroy()
-          //     break
-          // }
         }),
       )
       .on('close', () => {
