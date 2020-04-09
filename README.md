@@ -62,7 +62,7 @@ $ npm install -g @kgossent/sfdx-md-merge-driver
 $ sfdx-md-merge-driver COMMAND
 running command...
 $ sfdx-md-merge-driver (-v|--version|version)
-@kgossent/sfdx-md-merge-driver/0.1.6 win32-x64 node-v12.16.1
+@kgossent/sfdx-md-merge-driver/0.1.6 win32-x64 node-v12.16.2
 $ sfdx-md-merge-driver --help [COMMAND]
 USAGE
   $ sfdx-md-merge-driver COMMAND
