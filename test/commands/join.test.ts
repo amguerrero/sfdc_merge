@@ -43,19 +43,23 @@ describe('join', () => {
       expect(process.exit()).to.equal('foobar')
       expect(ctx.stderr).to.contain('at least a metadataFile is not accessible')
     })
-})
 
-test
-  .stub(process, 'exit', () => 'foobar')
-  .stderr()
-  .command([
-    'join',
-    '-m',
-    './test/files/WZ_Admin.profile',
-    './test/files/WZ_Admin.profile',
-    './test/files/WZ_Admin.profile',
-  ])
-  .it('runs join with big file', (ctx) => {
-    expect(process.exit()).to.equal('foobar')
-    expect(ctx.stderr).to.contain('successfully joined')
-  })
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stderr()
+    .command([
+      'join',
+      '-m',
+      './test/files/WZ_Admin.profile',
+      '-m',
+      './test/files/WZ_Admin.profile',
+      '-m',
+      './test/files/WZ_Admin.profile',
+      '-o',
+      './test/files/WZ_Admin.profile',
+    ])
+    .it('runs join with big file', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
+      expect(ctx.stderr).to.contain('successfully joined')
+    })
+})
