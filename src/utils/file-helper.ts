@@ -2,10 +2,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as es from 'event-stream'
 import * as xml2js from 'xml2js'
+import {buildUniqueKey} from '../utils/merge-helper'
 
-const regProfile = /.*<Profile xmlns/
-const regPSet = /.*<PermissionSet xmlns/
-const regLabel = /.*<CustomLabels xmlns/
+const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
 
 const builder = new xml2js.Builder({
   xmldec: {version: '1.0', encoding: 'UTF-8'},
@@ -46,19 +45,10 @@ async function getMetafromFile(file) {
       .pipe(es.split())
       .pipe(
         es.mapSync(function (line) {
-          switch (true) {
-            case regProfile.test(line):
-              output = 'Profile'
-              s.destroy()
-              break
-            case regPSet.test(line):
-              output = 'PermissionSet'
-              s.destroy()
-              break
-            case regLabel.test(line):
-              output = 'CustomLabels'
-              s.destroy()
-              break
+          const match = line.match(regGenericMatch)
+          if (match !== null) {
+            output = match[0]
+            s.destroy()
           }
         }),
       )
@@ -79,25 +69,37 @@ function getConfigPath(meta) {
 
 export async function getMetaConfigJSON(meta) {
   return new Promise((resolve) => {
-    let output = ''
-    fs.createReadStream(getConfigPath(meta))
-      .pipe(
-        es.mapSync(function (data) {
-          // console.log(data)
-          output = output.concat(data)
-        }),
-      )
-      .on('end', () => {
-        const jsonO = JSON.parse(output)
-        const result = {uniqueKeys: {}, exclusiveUniqueKeys: {}}
-        for (const x of Object.keys(jsonO)) {
-          // result[x] =
-          jsonO[x].uniqueKeys === undefined
-            ? (result.exclusiveUniqueKeys[x] = jsonO[x].exclusiveUniqueKeys)
-            : (result.uniqueKeys[x] = jsonO[x].uniqueKeys)
-        }
-        resolve(result)
-      })
+    // let output = ''
+    // fs.createReadStream(getConfigPath(meta), {flags: 'r', encoding: 'utf8'})
+    //   // .pipe(
+    //   //   es.mapSync(function (data) {
+    //   //     // console.log(data)
+    //   //     output = output.concat(data)
+    //   //   }),
+    //   // )
+    //   .on('data', (chunk) => {
+    //     output = output.concat(chunk.toString())
+    //   })
+    //   .on('end', () => {
+    //     const jsonO = JSON.parse(output)
+    //     // const result = {uniqueKeys: {}, exclusiveUniqueKeys: {}}
+    //     // for (const x of Object.keys(jsonO)) {
+    //     //   // result[x] =
+    //     //   jsonO[x].uniqueKeys === undefined
+    //     //     ? (result.exclusiveUniqueKeys[x] = jsonO[x].exclusiveUniqueKeys)
+    //     //     : (result.uniqueKeys[x] = jsonO[x].uniqueKeys)
+    //     // }
+    //     // resolve(result)
+    //     resolve(jsonO)
+    //   })
+    fs.readFile(
+      getConfigPath(meta),
+      {flag: 'r', encoding: 'utf8'},
+      (err, data) => {
+        if (err) throw err
+        resolve(JSON.parse(data))
+      },
+    )
   })
 }
 
@@ -180,33 +182,72 @@ async function getNodes2(file, meta) {
   })
 } */
 
-export async function getNodes(file) {
+// async function getNodes(file) {
+//   return new Promise((resolve) => {
+//     let output = ''
+//     if (fs.statSync(file).size === 0) {
+//       resolve({})
+//     } else {
+//       fs.createReadStream(file)
+//         .pipe(
+//           es.mapSync(function (data) {
+//             output = output.concat(data)
+//           }),
+//         )
+//         .on('end', () => {
+//           xml2js.parseString(output, (e, r) => {
+//             resolve(r)
+//           })
+//         })
+//     }
+//   }).then((result) => {
+//     return result
+//   })
+// }
+
+async function getNodesFromXmlFile(file) {
   return new Promise((resolve) => {
-    let output = ''
-    if (fs.statSync(file).size === 0) {
-      resolve({})
-    } else {
-      fs.createReadStream(file)
-        .pipe(
-          es.mapSync(function (data) {
-            output = output.concat(data)
-          }),
-        )
-        .on('end', () => {
-          xml2js.parseString(output, (e, r) => {
-            resolve(r)
-          })
-        })
+    fs.readFile(file, {flag: 'r', encoding: 'utf8'}, (err, data) => {
+      if (err) throw err
+      xml2js.parseString(data, (e, r) => {
+        resolve(r)
+      })
+    })
+  })
+  // .then((result) => {
+  //   return result
+  // })
+}
+
+async function getNodesOfMeta(file, meta) {
+  return getNodesFromXmlFile(file).then((result) => {
+    if (result[meta]) {
+      return result[meta]
     }
-  }).then((result) => {
-    return result
+    return {}
   })
 }
 
-async function getNodes3(file, meta) {
-  return getNodes(file).then((result) => {
-    if (result[meta]) {
-      return result[meta]
+async function getKeyedNodesOfMeta(file, meta, configJson) {
+  return getNodesOfMeta(file, meta).then((result) => {
+    if (result) {
+      const ancient = []
+      Object.keys(result).forEach((localpart) => {
+        let nodelist = result[localpart]
+        if (!Array.isArray(nodelist)) {
+          nodelist = [nodelist]
+        }
+        nodelist.forEach((node) => {
+          const uniqueNodeKey = buildUniqueKey(node, localpart, configJson)
+          if (uniqueNodeKey) {
+            ancient[uniqueNodeKey] = {
+              nodeType: localpart,
+              node: node,
+            }
+          }
+        })
+      })
+      return ancient
     }
     return {}
   })
@@ -216,7 +257,23 @@ export async function getFiles(files: string[], meta) {
   const tabPromise = []
   let output
   for (const key of files) {
-    tabPromise.push(getNodes3(key, meta))
+    tabPromise.push(getNodesOfMeta(key, meta))
+  }
+  await Promise.all(tabPromise)
+    .then((data) => {
+      output = data
+    })
+    .catch((error) => {
+      throw error
+    })
+  return output
+}
+
+export async function getKeyedFiles(files: string[], meta, configJson) {
+  const tabPromise = []
+  let output
+  for (const file of files) {
+    tabPromise.push(getKeyedNodesOfMeta(file, meta, configJson))
   }
   await Promise.all(tabPromise)
     .then((data) => {
@@ -230,7 +287,7 @@ export async function getFiles(files: string[], meta) {
 
 export async function writeOutput(meta, file, jsonOutput) {
   const base = getNodeBaseJSON(meta)
-  base[meta] = jsonOutput
+  Object.assign(base[meta], jsonOutput)
   if (file !== undefined && file !== '') {
     fs.writeFileSync(file, builder.buildObject(base))
   } else {
