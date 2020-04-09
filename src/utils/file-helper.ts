@@ -181,31 +181,45 @@ async function getNodes2(file, meta) {
   })
 } */
 
-export async function getNodes(file) {
+// async function getNodes(file) {
+//   return new Promise((resolve) => {
+//     let output = ''
+//     if (fs.statSync(file).size === 0) {
+//       resolve({})
+//     } else {
+//       fs.createReadStream(file)
+//         .pipe(
+//           es.mapSync(function (data) {
+//             output = output.concat(data)
+//           }),
+//         )
+//         .on('end', () => {
+//           xml2js.parseString(output, (e, r) => {
+//             resolve(r)
+//           })
+//         })
+//     }
+//   }).then((result) => {
+//     return result
+//   })
+// }
+
+async function getNodesFromXmlFile(file) {
   return new Promise((resolve) => {
-    let output = ''
-    if (fs.statSync(file).size === 0) {
-      resolve({})
-    } else {
-      fs.createReadStream(file)
-        .pipe(
-          es.mapSync(function (data) {
-            output = output.concat(data)
-          }),
-        )
-        .on('end', () => {
-          xml2js.parseString(output, (e, r) => {
-            resolve(r)
-          })
-        })
-    }
-  }).then((result) => {
-    return result
+    fs.readFile(file, {flag: 'r', encoding: 'utf8'}, (err, data) => {
+      if (err) throw err
+      xml2js.parseString(data, (e, r) => {
+        // .then((result) => {
+        //   return result
+        // })
+        resolve(r)
+      })
+    })
   })
 }
 
-async function getNodes3(file, meta) {
-  return getNodes(file).then((result) => {
+async function getNodesOfMeta(file, meta) {
+  return getNodesFromXmlFile(file).then((result) => {
     if (result[meta]) {
       return result[meta]
     }
@@ -242,7 +256,7 @@ export async function getFiles(files: string[], meta) {
   const tabPromise = []
   let output
   for (const key of files) {
-    tabPromise.push(getNodes3(key, meta))
+    tabPromise.push(getNodesOfMeta(key, meta))
   }
   await Promise.all(tabPromise)
     .then((data) => {
