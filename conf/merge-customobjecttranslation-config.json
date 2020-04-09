@@ -1,0 +1,58 @@
+{
+  "caseValues": {
+    "uniqueKeys": ["caseType", "plural", "possessive"],
+    "equalKeys": ["caseType", "plural", "possessive", "article", "value"]
+  },
+  "fields": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label", "description", "caseValues", "gender", "help", "lookupFilter", "picklistValues", "relationshipLabel", "startsWith"]
+  },
+  "fieldSets": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "gender": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "layouts": {
+    "uniqueKeys": ["layout"],
+    "equalKeys": ["layout", "layoutType", "sections"]
+  },
+  "nameFieldLabel": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "namedFilters": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "informationalMessage", "errorMessage"]
+  },
+  "quickActions": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "recordTypes": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label", "description"]
+  },
+  "sharingReasons": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "startsWith": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "validationRules": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "errorMessage"]
+  },
+  "webLinks": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "workflowTasks": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "subject", "description"]
+  }
+}
