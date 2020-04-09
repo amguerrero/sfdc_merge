@@ -287,7 +287,7 @@ export async function getKeyedFiles(files: string[], meta, configJson) {
 
 export async function writeOutput(meta, file, jsonOutput) {
   const base = getNodeBaseJSON(meta)
-  base[meta] = jsonOutput
+  Object.assign(base[meta], jsonOutput)
   if (file !== undefined && file !== '') {
     fs.writeFileSync(file, builder.buildObject(base))
   } else {
