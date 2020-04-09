@@ -212,6 +212,31 @@ async function getNodes3(file, meta) {
   })
 }
 
+// async function getNodes4(file, meta) {
+//   return getNodes(file).then((result) => {
+//     if (result[meta]) {
+//       const ancient = []
+//       Object.keys(result[meta]).forEach(localpart => {
+//         let nodelist = result[meta][localpart]
+//         if (!Array.isArray(nodelist)) {
+//           nodelist = [nodelist]
+//         }
+//         nodelist.forEach(node => {
+//           const uniqueNodeKey = buildUniqueKey(node, localpart)
+//           if (uniqueNodeKey) {
+//             ancient[uniqueNodeKey] = {
+//               nodeType: localpart,
+//               node: node,
+//             }
+//           }
+//         })
+//       })
+//       return result[meta]
+//     }
+//     return {}
+//   })
+// }
+
 export async function getFiles(files: string[], meta) {
   const tabPromise = []
   let output

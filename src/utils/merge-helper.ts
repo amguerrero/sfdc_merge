@@ -34,3 +34,24 @@ export function joinExclusives(ours, theirs, attributs) {
     )
     .concat(theirs)
 }
+
+export function buildUniqueKey(node, meta, configJson) {
+  let uniqueKey = null
+  if (configJson.uniqueKeys && configJson.uniqueKeys[meta]) {
+    uniqueKey = configJson.uniqueKeys[meta].reduce(
+      (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
+      meta.concat('#'),
+    )
+  } else if (
+    configJson.exclusiveUniqueKeys &&
+    configJson.exclusiveUniqueKeys[meta]
+  ) {
+    uniqueKey = Array.of(
+      configJson.exclusiveUniqueKeys[meta].find((att) => node[att]),
+    ).reduce(
+      (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
+      meta.concat('#'),
+    )
+  }
+  return uniqueKey
+}

@@ -6,7 +6,11 @@ import {
   writeOutput,
   allFilesExist,
 } from '../utils/file-helper'
-import {joinUniques, joinExclusives} from '../utils/merge-helper'
+import {
+  joinUniques,
+  joinExclusives,
+  buildUniqueKey,
+} from '../utils/merge-helper'
 import {addVerboseInfo, printVerboseInfo} from '../utils/verbose-helper'
 
 export default class Join extends Command {
@@ -79,6 +83,14 @@ export default class Join extends Command {
     await getFiles(flags.meta, meta).then((result) => {
       fileJSON = result
     })
+    console.log(
+      'test key local'.padEnd(30),
+      buildUniqueKey(
+        fileJSON[0].layoutAssignments[0],
+        'layoutAssignments',
+        configJson,
+      ),
+    )
     if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'get files time:')
 
     stepStart = Date.now()
