@@ -35,23 +35,38 @@ export function joinExclusives(ours, theirs, attributs) {
     .concat(theirs)
 }
 
-export function buildUniqueKey(node, meta, configJson) {
+export function buildUniqueKey(node, type, configJson) {
   let uniqueKey = null
-  if (configJson.uniqueKeys && configJson.uniqueKeys[meta]) {
-    uniqueKey = configJson.uniqueKeys[meta].reduce(
-      (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
-      meta.concat('#'),
-    )
-  } else if (
-    configJson.exclusiveUniqueKeys &&
-    configJson.exclusiveUniqueKeys[meta]
-  ) {
-    uniqueKey = Array.of(
-      configJson.exclusiveUniqueKeys[meta].find((att) => node[att]),
-    ).reduce(
-      (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
-      meta.concat('#'),
-    )
+  // if (configJson.uniqueKeys && configJson.uniqueKeys[type]) {
+  //   uniqueKey = configJson.uniqueKeys[type].reduce(
+  //     (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
+  //     type.concat('#'),
+  //   )
+  // } else if (
+  //   configJson.exclusiveUniqueKeys &&
+  //   configJson.exclusiveUniqueKeys[type]
+  // ) {
+  //   uniqueKey = Array.of(
+  //     configJson.exclusiveUniqueKeys[type].find((att) => node[att]),
+  //   ).reduce(
+  //     (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
+  //     type.concat('#'),
+  //   )
+  // }
+  if (configJson[type]) {
+    if (configJson[type].uniqueKeys) {
+      uniqueKey = configJson[type].uniqueKeys.reduce(
+        (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
+        type.concat('#'),
+      )
+    } else {
+      uniqueKey = Array.of(
+        configJson[type].exclusiveUniqueKeys.find((att) => node[att]),
+      ).reduce(
+        (acc, attribut) => acc.concat(node[attribut][0]).concat('#'),
+        type.concat('#'),
+      )
+    }
   }
   return uniqueKey
 }

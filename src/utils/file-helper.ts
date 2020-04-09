@@ -68,25 +68,37 @@ function getConfigPath(meta) {
 
 export async function getMetaConfigJSON(meta) {
   return new Promise((resolve) => {
-    let output = ''
-    fs.createReadStream(getConfigPath(meta))
-      .pipe(
-        es.mapSync(function (data) {
-          // console.log(data)
-          output = output.concat(data)
-        }),
-      )
-      .on('end', () => {
-        const jsonO = JSON.parse(output)
-        const result = {uniqueKeys: {}, exclusiveUniqueKeys: {}}
-        for (const x of Object.keys(jsonO)) {
-          // result[x] =
-          jsonO[x].uniqueKeys === undefined
-            ? (result.exclusiveUniqueKeys[x] = jsonO[x].exclusiveUniqueKeys)
-            : (result.uniqueKeys[x] = jsonO[x].uniqueKeys)
-        }
-        resolve(result)
-      })
+    // let output = ''
+    // fs.createReadStream(getConfigPath(meta), {flags: 'r', encoding: 'utf8'})
+    //   // .pipe(
+    //   //   es.mapSync(function (data) {
+    //   //     // console.log(data)
+    //   //     output = output.concat(data)
+    //   //   }),
+    //   // )
+    //   .on('data', (chunk) => {
+    //     output = output.concat(chunk.toString())
+    //   })
+    //   .on('end', () => {
+    //     const jsonO = JSON.parse(output)
+    //     // const result = {uniqueKeys: {}, exclusiveUniqueKeys: {}}
+    //     // for (const x of Object.keys(jsonO)) {
+    //     //   // result[x] =
+    //     //   jsonO[x].uniqueKeys === undefined
+    //     //     ? (result.exclusiveUniqueKeys[x] = jsonO[x].exclusiveUniqueKeys)
+    //     //     : (result.uniqueKeys[x] = jsonO[x].uniqueKeys)
+    //     // }
+    //     // resolve(result)
+    //     resolve(jsonO)
+    //   })
+    fs.readFile(
+      getConfigPath(meta),
+      {flag: 'r', encoding: 'utf8'},
+      (err, data) => {
+        if (err) throw err
+        resolve(JSON.parse(data))
+      },
+    )
   })
 }
 
