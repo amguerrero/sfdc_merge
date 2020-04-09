@@ -3,6 +3,7 @@ import {
   getMetadataType,
   getMetaConfigJSON,
   getFiles,
+  getKeyedFiles,
   writeOutput,
   allFilesExist,
 } from '../utils/file-helper'
@@ -138,7 +139,47 @@ export default class Join extends Command {
     if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'join time:')
 
     stepStart = Date.now()
-    await writeOutput(meta, flags.output, merged)
+    let fileKeyedJSON
+    await getKeyedFiles(flags.meta, meta, configJson).then((result) => {
+      fileKeyedJSON = result
+    })
+    if (flags.verbose)
+      addVerboseInfo(verboseTab, stepStart, 'get keyed files time:')
+
+    stepStart = Date.now()
+    const reducerKeyed = function (acc, curr) {
+      // first loop we will use the current Permission => no merge required :D
+      if (Object.entries(acc).length === 0 && acc.constructor === Object) {
+        return curr
+      }
+      Object.keys(curr).forEach((p) => {
+        acc[p] = curr[p]
+      })
+      return acc
+    }
+    const mergedKeyed = fileKeyedJSON.reduce(reducerKeyed, {})
+    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'join keyed time:')
+
+    stepStart = Date.now()
+    const unKeyed = {}
+    Object.keys(mergedKeyed)
+      .sort()
+      .forEach(function (key) {
+        // eslint-disable-next-line no-negated-condition
+        if (mergedKeyed[key].nodeType !== '$') {
+          if (!Array.isArray(unKeyed[meta][mergedKeyed[key].nodeType])) {
+            unKeyed[meta][mergedKeyed[key].nodeType] = []
+          }
+          unKeyed[meta][mergedKeyed[key].nodeType].push(mergedKeyed[key].node)
+        } else {
+          unKeyed[meta][mergedKeyed[key].nodeType] = mergedKeyed[key].node
+        }
+      })
+    if (flags.verbose)
+      addVerboseInfo(verboseTab, stepStart, 'transform keyed to unkeyed:')
+
+    stepStart = Date.now()
+    await writeOutput(meta, flags.output, unKeyed)
     if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'writing time:')
 
     if (flags.verbose) printVerboseInfo(verboseTab, tStart)
