@@ -3,9 +3,9 @@ import * as path from 'path'
 import * as es from 'event-stream'
 import * as xml2js from 'xml2js'
 
-const regProfile = /.*<Profile xmlns/
-const regPSet = /.*<PermissionSet xmlns/
-const regLabel = /.*<CustomLabels xmlns/
+// const regProfile = /.*<Profile xmlns/
+// const regPSet = /.*<PermissionSet xmlns/
+// const regLabel = /.*<CustomLabels xmlns/
 
 const builder = new xml2js.Builder({
   xmldec: {version: '1.0', encoding: 'UTF-8'},
@@ -46,20 +46,26 @@ async function getMetafromFile(file) {
       .pipe(es.split())
       .pipe(
         es.mapSync(function (line) {
-          switch (true) {
-            case regProfile.test(line):
-              output = 'Profile'
-              s.destroy()
-              break
-            case regPSet.test(line):
-              output = 'PermissionSet'
-              s.destroy()
-              break
-            case regLabel.test(line):
-              output = 'CustomLabels'
-              s.destroy()
-              break
+          const match = line.match(/(?<=<)(\w+)(?= +xmlns)/)
+          if (match !== null) {
+            // console.log('Test regexp match', line.match(/(?<=<)(\w+)(?= +xmlns)/))
+            output = match[0]
+            s.destroy()
           }
+          // switch (true) {
+          //   case regProfile.test(line):
+          //     output = 'Profile'
+          //     s.destroy()
+          //     break
+          //   case regPSet.test(line):
+          //     output = 'PermissionSet'
+          //     s.destroy()
+          //     break
+          //   case regLabel.test(line):
+          //     output = 'CustomLabels'
+          //     s.destroy()
+          //     break
+          // }
         }),
       )
       .on('close', () => {
