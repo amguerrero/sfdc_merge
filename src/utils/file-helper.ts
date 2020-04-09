@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as es from 'event-stream'
 import * as xml2js from 'xml2js'
+import {buildUniqueKey} from '../utils/merge-helper'
 
 const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
 
@@ -209,13 +210,13 @@ async function getNodesFromXmlFile(file) {
     fs.readFile(file, {flag: 'r', encoding: 'utf8'}, (err, data) => {
       if (err) throw err
       xml2js.parseString(data, (e, r) => {
-        // .then((result) => {
-        //   return result
-        // })
         resolve(r)
       })
     })
   })
+  // .then((result) => {
+  //   return result
+  // })
 }
 
 async function getNodesOfMeta(file, meta) {
@@ -227,36 +228,52 @@ async function getNodesOfMeta(file, meta) {
   })
 }
 
-// async function getNodes4(file, meta) {
-//   return getNodes(file).then((result) => {
-//     if (result[meta]) {
-//       const ancient = []
-//       Object.keys(result[meta]).forEach(localpart => {
-//         let nodelist = result[meta][localpart]
-//         if (!Array.isArray(nodelist)) {
-//           nodelist = [nodelist]
-//         }
-//         nodelist.forEach(node => {
-//           const uniqueNodeKey = buildUniqueKey(node, localpart)
-//           if (uniqueNodeKey) {
-//             ancient[uniqueNodeKey] = {
-//               nodeType: localpart,
-//               node: node,
-//             }
-//           }
-//         })
-//       })
-//       return result[meta]
-//     }
-//     return {}
-//   })
-// }
+async function getKeyedNodesOfMeta(file, meta, configJson) {
+  return getNodesOfMeta(file, meta).then((result) => {
+    if (result) {
+      const ancient = []
+      Object.keys(result).forEach((localpart) => {
+        let nodelist = result[localpart]
+        if (!Array.isArray(nodelist)) {
+          nodelist = [nodelist]
+        }
+        nodelist.forEach((node) => {
+          const uniqueNodeKey = buildUniqueKey(node, localpart, configJson)
+          if (uniqueNodeKey) {
+            ancient[uniqueNodeKey] = {
+              nodeType: localpart,
+              node: node,
+            }
+          }
+        })
+      })
+      return ancient
+    }
+    return {}
+  })
+}
 
 export async function getFiles(files: string[], meta) {
   const tabPromise = []
   let output
   for (const key of files) {
     tabPromise.push(getNodesOfMeta(key, meta))
+  }
+  await Promise.all(tabPromise)
+    .then((data) => {
+      output = data
+    })
+    .catch((error) => {
+      throw error
+    })
+  return output
+}
+
+export async function getKeyedFiles(files: string[], meta, configJson) {
+  const tabPromise = []
+  let output
+  for (const file of files) {
+    tabPromise.push(getKeyedNodesOfMeta(file, meta, configJson))
   }
   await Promise.all(tabPromise)
     .then((data) => {
