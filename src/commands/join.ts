@@ -88,7 +88,24 @@ export default class Join extends Command {
         return curr
       }
       Object.keys(curr).forEach((p) => {
-        acc[p] = curr[p]
+        if (acc[p] && configJson[curr[p].nodeType]) {
+          const listToAppend = configJson[
+            curr[p].nodeType
+          ].equalKeys.filter((att: string) => att.endsWith('[]'))
+          if (listToAppend.length > 0) {
+            listToAppend.forEach((att) => {
+              acc[p].node[att.replace('[]', '')] = acc[p].node[
+                att.replace('[]', '')
+              ]
+                .concat(curr[p].node[att.replace('[]', '')])
+                .filter((el, i, a) => el !== undefined && i === a.indexOf(el))
+            })
+          } else {
+            acc[p] = curr[p]
+          }
+        } else {
+          acc[p] = curr[p]
+        }
       })
       return acc
     }
