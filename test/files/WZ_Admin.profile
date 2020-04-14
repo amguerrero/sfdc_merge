@@ -1810,6 +1810,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.ECOM_IsIncludedInchallenge__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Account.ECOM_Language__c</field>
         <readable>true</readable>
@@ -4203,6 +4208,91 @@
         <editable>true</editable>
         <field>Contact.backupAccountId__c</field>
         <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.ActivatedById</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.ActivatedDate</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.BillingAddress</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.CompanySignedDate</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.CompanySignedId</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.ContractTerm</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.CustomerSignedDate</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.CustomerSignedId</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.CustomerSignedTitle</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.Description</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.EndDate</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.Name</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.OwnerExpirationNotice</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.Pricebook2Id</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.ShippingAddress</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.SpecialTerms</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.StartDate</field>
+        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -12294,167 +12384,8 @@
         <field>WZ_Site__c.WZ_Weasy_Orders__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.WZ_To_Develop_Customer__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Account_Order__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Account_Quote__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Margin__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Path__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Rebate__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Total_Cost__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_VariantNumber__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Order.WZ_Version_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>OrderItem.WZ_Client_possible_delivery__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>OrderItem.WZ_Margin__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>OrderItem.WZ_Total_Rebate__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>WZ_Customer_Org_KPI__c.WZ_To_Develop_Customer__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Account.ECOM_IsIncludedInchallenge__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.ActivatedById</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.ActivatedDate</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.BillingAddress</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.CompanySignedDate</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.CompanySignedId</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.ContractTerm</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.CustomerSignedDate</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.CustomerSignedId</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.CustomerSignedTitle</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.Description</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.EndDate</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.Name</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.OwnerExpirationNotice</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.Pricebook2Id</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.ShippingAddress</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.SpecialTerms</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.StartDate</field>
-        <readable>false</readable>
-    </fieldPermissions>
     <layoutAssignments>
         <layout>Account-Account Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Account-Account Layout</layout>
-        <recordType>Account.Test_Account_RT</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Account-Account Layout Weasy C</layout>
@@ -12465,16 +12396,16 @@
         <recordType>Account.ECOM_Client</recordType>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Account-Address Layout Weasy Console</layout>
-        <recordType>Account.WZ_Construction_Site_Address</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Account-Address Layout Weasy Console</layout>
-        <recordType>Account.WZ_Shipping_Address</recordType>
+        <layout>Account-Account Layout</layout>
+        <recordType>Account.Test_Account_RT</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Account-Competitor Layout Weasy C</layout>
         <recordType>Account.WZ_Competitor</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Account-Address Layout Weasy Console</layout>
+        <recordType>Account.WZ_Construction_Site_Address</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Account-Presciber Page Layout Weasy C</layout>
@@ -12485,13 +12416,17 @@
         <recordType>Account.WZ_Prospect</recordType>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>Account-Address Layout Weasy Console</layout>
+        <recordType>Account.WZ_Shipping_Address</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>AccountTeamMember-Account Team Member Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Case-Case Layout Weasy C</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Case-Case Layout Weasy C</layout>
+        <layout>CaseClose-Close Case Layout Weasy C</layout>
         <recordType>Case.Request</recordType>
     </layoutAssignments>
     <layoutAssignments>
@@ -12500,10 +12435,6 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>CaseClose-Close Case Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>CaseClose-Close Case Layout Weasy C</layout>
-        <recordType>Case.Request</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Competition__c-Competition Layout Console</layout>
@@ -12610,11 +12541,11 @@
         <layout>OpeningHours__c-Opening Hours Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Opportunity-Opportunity Downstream Weasy C</layout>
-        <recordType>Opportunity.Downstream_Opportunity</recordType>
+        <layout>Opportunity-Opportunity Layout Console Weasy</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Opportunity-Opportunity Layout Console Weasy</layout>
+        <layout>Opportunity-Opportunity Downstream Weasy C</layout>
+        <recordType>Opportunity.Downstream_Opportunity</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Opportunity-Opportunity Layout Console Weasy</layout>
@@ -12636,6 +12567,29 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>Order-Order Layout Weasy C</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Order-Order Layout Weasy C</layout>
+        <recordType>Order.WZ_Order</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Order-Quote Layout Weasy C</layout>
+        <recordType>Order.WZ_Quote</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>OrderItem-Order Product Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Pricebook2-Price Book Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>PricebookEntry-Price Book Entry</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Product2-Product Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>QRCodeMatching__c-QRCodeMatching Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Question-Question Layout</layout>
@@ -12675,29 +12629,6 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>Survey__c-Survey Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Order-Order Layout Weasy C</layout>
-        <recordType>Order.WZ_Order</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Order-Quote Layout Weasy C</layout>
-        <recordType>Order.WZ_Quote</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>OrderItem-Order Product Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Pricebook2-Price Book Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>PricebookEntry-Price Book Entry</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Product2-Product Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>QRCodeMatching__c-QRCodeMatching Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Task-Task Layout Weasy Console</layout>
@@ -12831,11 +12762,11 @@
         <layout>WZ_Participants__c-Partcipant Layout Weasy Console</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>WZ_Product__c-Processed Product Layout Weasy C</layout>
-        <recordType>WZ_Product__c.WZ_Processed_Product</recordType>
+        <layout>WZ_Product__c-Product Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>WZ_Product__c-Product Layout</layout>
+        <layout>WZ_Product__c-Processed Product Layout Weasy C</layout>
+        <recordType>WZ_Product__c.WZ_Processed_Product</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Product__c-Upstream Product Layout Weasy C</layout>
@@ -12848,6 +12779,9 @@
         <layout>WZ_Project_Player__c-Project Player Facade Weasy C</layout>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>WZ_Project__c-Project Layout Console</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>WZ_Project__c-Contact Business Project Weasy C</layout>
         <recordType>WZ_Project__c.WZ_Contact_Business_Project</recordType>
     </layoutAssignments>
@@ -12857,10 +12791,10 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Project__c-Project Layout Console</layout>
+        <recordType>WZ_Project__c.WZ_History_Project</recordType>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>WZ_Project__c-Project Layout Console</layout>
-        <recordType>WZ_Project__c.WZ_History_Project</recordType>
+        <layout>WZ_Prospect_Form__c-Prospect Form Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Prospect_Form__c-Prospect FORM BE</layout>
@@ -12871,23 +12805,16 @@
         <recordType>WZ_Prospect_Form__c.Prospect_FORM_CZ_SK</recordType>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>WZ_Prospect_Form__c-Prospect Form DE Weasy C</layout>
+        <recordType>WZ_Prospect_Form__c.Prospect_FORM_DE</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>WZ_Prospect_Form__c-Prospect FORM FR</layout>
         <recordType>WZ_Prospect_Form__c.Prospect_FORM_FR</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Prospect_Form__c-Prospect FORM PL</layout>
         <recordType>WZ_Prospect_Form__c.Prospect_FORM_PL</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>WZ_Prospect_Form__c-Prospect Form DE Weasy C</layout>
-        <recordType>WZ_Prospect_Form__c.Prospect_FORM_DE</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>WZ_Prospect_Form__c-Prospect Form Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>WZ_Prospect_Form__c-Prospect Form NL Weasy C</layout>
-        <recordType>WZ_Prospect_Form__c.WZ_Prospect_Form_NL</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Prospect_Form__c-Prospect Form NO Weasy C</layout>
@@ -12902,11 +12829,15 @@
         <recordType>WZ_Prospect_Form__c.WZ_Prospect_FORM_SW</recordType>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>WZ_Quote__c-Quote Layout ERP Weasy C</layout>
-        <recordType>WZ_Quote__c.WZ_ERP_Quotes</recordType>
+        <layout>WZ_Prospect_Form__c-Prospect Form NL Weasy C</layout>
+        <recordType>WZ_Prospect_Form__c.WZ_Prospect_Form_NL</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Quote__c-Quote Layout weasy C</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>WZ_Quote__c-Quote Layout ERP Weasy C</layout>
+        <recordType>WZ_Quote__c.WZ_ERP_Quotes</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>WZ_Quote__c-Quote Layout weasy C</layout>
