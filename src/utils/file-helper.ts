@@ -165,32 +165,9 @@ async function getKeyedNodesOfMeta(file, meta, configJson) {
       }
       await Promise.all(tabPromise).then((data) => {
         for (const elem of data) {
-          // console.log('elem', elem)
-          // console.log('elem keys', Object.keys(elem))
           Object.assign(keyedTab, elem)
-          // console.log('keyedTab', keyedTab)
-          // if (elem.nodeKey)
-          //   keyedTab[elem.nodeKey] = {
-          //     nodeType: elem.nodeType,
-          //     node: elem.node,
-          //   }
         }
       })
-      // Object.keys(result).forEach((localpart) => {
-      //   let nodelist = result[localpart]
-      //   if (!Array.isArray(nodelist)) {
-      //     nodelist = [nodelist]
-      //   }
-      //   nodelist.forEach((node) => {
-      //     const uniqueNodeKey = buildUniqueKey(node, localpart, configJson)
-      //     if (uniqueNodeKey) {
-      //       keyedTab[uniqueNodeKey] = {
-      //         nodeType: localpart,
-      //         node: node,
-      //       }
-      //     }
-      //   })
-      // })
       return keyedTab
     }
     return {}
