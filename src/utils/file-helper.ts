@@ -135,26 +135,63 @@ async function getNodesOfMeta(file, meta) {
   })
 }
 
+async function treatNodeUniqueKey(localType, localNode, configJson) {
+  const result = []
+  let nodelist = localNode
+  if (!Array.isArray(nodelist)) {
+    nodelist = [nodelist]
+  }
+  nodelist.forEach((node) => {
+    const uniqueNodeKey = buildUniqueKey(node, localType, configJson)
+    if (uniqueNodeKey) {
+      result[uniqueNodeKey] = {
+        nodeType: localType,
+        node: node,
+      }
+    }
+  })
+  return result
+}
+
 async function getKeyedNodesOfMeta(file, meta, configJson) {
-  return getNodesOfMeta(file, meta).then((result) => {
+  return getNodesOfMeta(file, meta).then(async (result) => {
     if (result) {
-      const ancient = []
-      Object.keys(result).forEach((localpart) => {
-        let nodelist = result[localpart]
-        if (!Array.isArray(nodelist)) {
-          nodelist = [nodelist]
+      const keyedTab = []
+      const tabPromise = []
+      for (const localType of Object.keys(result)) {
+        tabPromise.push(
+          treatNodeUniqueKey(localType, result[localType], configJson),
+        )
+      }
+      await Promise.all(tabPromise).then((data) => {
+        for (const elem of data) {
+          // console.log('elem', elem)
+          // console.log('elem keys', Object.keys(elem))
+          Object.assign(keyedTab, elem)
+          // console.log('keyedTab', keyedTab)
+          // if (elem.nodeKey)
+          //   keyedTab[elem.nodeKey] = {
+          //     nodeType: elem.nodeType,
+          //     node: elem.node,
+          //   }
         }
-        nodelist.forEach((node) => {
-          const uniqueNodeKey = buildUniqueKey(node, localpart, configJson)
-          if (uniqueNodeKey) {
-            ancient[uniqueNodeKey] = {
-              nodeType: localpart,
-              node: node,
-            }
-          }
-        })
       })
-      return ancient
+      // Object.keys(result).forEach((localpart) => {
+      //   let nodelist = result[localpart]
+      //   if (!Array.isArray(nodelist)) {
+      //     nodelist = [nodelist]
+      //   }
+      //   nodelist.forEach((node) => {
+      //     const uniqueNodeKey = buildUniqueKey(node, localpart, configJson)
+      //     if (uniqueNodeKey) {
+      //       keyedTab[uniqueNodeKey] = {
+      //         nodeType: localpart,
+      //         node: node,
+      //       }
+      //     }
+      //   })
+      // })
+      return keyedTab
     }
     return {}
   })
