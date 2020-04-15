@@ -39,6 +39,11 @@
     "uniqueKeys": ["field"],
     "equalKeys": ["field", "editable", "hidden", "readable"]
   },
+  "flowAccesses": {
+    "uniqueKeys": ["flow"],
+    "equalKeys": ["flow", "enabled"],
+    "problem": "does not exist in metadata type definition but is retrieved"
+  },
   "fullName": {
     "uniqueKeys": [],
     "equalKeys": []
