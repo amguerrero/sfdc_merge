@@ -13,6 +13,7 @@
     "@oclif/config": "^1.14.0",
     "@oclif/plugin-help": "^2.2.3",
     "event-stream": "^4.0.1",
+    "jsonpath-plus": "^4.0.0",
     "mkdirp": "1.0.3",
     "pkg-dir": "4.2.0",
     "shelljs": "0.8.3",
