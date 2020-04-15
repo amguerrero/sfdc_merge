@@ -7,6 +7,7 @@ import {
   allFilesExist,
 } from '../utils/file-helper'
 import {addVerboseInfo, printVerboseInfo} from '../utils/verbose-helper'
+import {JSONPath} from 'jsonpath-plus'
 
 export default class Join extends Command {
   static description = 'Additionally merge the files of same metadataType'
@@ -26,12 +27,19 @@ export default class Join extends Command {
       char: 'v',
       description: 'verbose mode',
     }),
+    algo: flags.string({
+      char: 'a',
+      description: 'algorithm for join, latest or meld',
+      default: 'latest',
+      options: ['latest', 'meld'],
+    }),
   }
 
   async run() {
     const tStart = Date.now()
     const verboseTab = []
     const {flags} = this.parse(Join)
+    console.log('flags', flags)
 
     let stepStart = Date.now()
     if (flags.meta === undefined) {
@@ -87,26 +95,38 @@ export default class Join extends Command {
       if (Object.entries(acc).length === 0 && acc.constructor === Object) {
         return curr
       }
-      Object.keys(curr).forEach((p) => {
-        if (acc[p] && configJson[curr[p].nodeType]) {
-          const listToAppend = configJson[
-            curr[p].nodeType
-          ].equalKeys.filter((att: string) => att.endsWith('[]'))
-          if (listToAppend.length > 0) {
-            listToAppend.forEach((att) => {
-              acc[p].node[att.replace('[]', '')] = acc[p].node[
-                att.replace('[]', '')
-              ]
-                .concat(curr[p].node[att.replace('[]', '')])
-                .filter((el, i, a) => el !== undefined && i === a.indexOf(el))
+      if (flags.algo === 'latest') {
+        Object.assign(acc, curr)
+        return acc
+      }
+      // eslint-disable-next-line new-cap
+      const jspath = JSONPath({
+        path: '$..[?(@.subKeys)]',
+        json: configJson,
+        resultType: 'parentProperty',
+        wrap: false,
+      })
+      // eslint-disable-next-line new-cap
+      if (jspath) {
+        Object.keys(curr).forEach((p) => {
+          if (
+            acc[p] &&
+            configJson[curr[p].nodeType] &&
+            jspath.includes(curr[p].nodeType)
+          ) {
+            configJson[curr[p].nodeType].subKeys.forEach((att) => {
+              const joined = [...acc[p].node[att], ...curr[p].node[att]]
+              acc[p].node[att] = joined.filter(
+                (item, index) => joined.indexOf(item) === index,
+              )
             })
           } else {
             acc[p] = curr[p]
           }
-        } else {
-          acc[p] = curr[p]
-        }
-      })
+        })
+      } else {
+        Object.assign(acc, curr)
+      }
       return acc
     }
     const mergedKeyed = fileKeyedJSON.reduce(reducerKeyed, {})

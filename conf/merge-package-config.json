@@ -1,7 +1,8 @@
 {
   "types": {
     "uniqueKeys": ["name"],
-    "equalKeys": ["name", "members[]"]
+    "subKeys": ["members"],
+    "equalKeys": ["name", "members"]
   },
   "version": {
     "uniqueKeys": [],
