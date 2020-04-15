@@ -39,7 +39,6 @@ export default class Join extends Command {
     const tStart = Date.now()
     const verboseTab = []
     const {flags} = this.parse(Join)
-    console.log('flags', flags)
 
     let stepStart = Date.now()
     if (flags.meta === undefined) {
