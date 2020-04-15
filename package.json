@@ -1,6 +1,6 @@
 {
   "name": "@kgossent/sfdx-md-merge-driver",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "git merge driver specific for Salesforce.com Metadata",
   "author": "KevinGossent @kgossent",
   "bin": {
