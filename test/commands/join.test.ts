@@ -29,6 +29,42 @@ describe('join', () => {
   test
     .stub(process, 'exit', () => 'foobar')
     .stderr()
+    .stdout()
+    .command([
+      'join',
+      '-a',
+      'meld',
+      '-m',
+      './test/files/package1.xml',
+      '-m',
+      './test/files/package2.xml',
+    ])
+    .it('runs join meld', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
+      expect(ctx.stderr).to.contain('successfully joined')
+    })
+
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stderr()
+    .stdout()
+    .command([
+      'join',
+      '-a',
+      'meld',
+      '-m',
+      './test/files/Case-fr.objectTranslation',
+      '-m',
+      './test/files/Case-fr.objectTranslation',
+    ])
+    .it('runs join variant unique key', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
+      expect(ctx.stderr).to.contain('successfully joined')
+    })
+
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stderr()
     .command(['join'])
     .it('runs join with no file', (ctx) => {
       expect(process.exit()).to.equal('foobar')
