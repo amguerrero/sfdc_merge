@@ -29,6 +29,21 @@ describe('join', () => {
     .command([
       'join',
       '-m',
+      './test/files/ancestor.profile-meta.xml',
+      '-m',
+      './test/files/empty.profile',
+    ])
+    .it('runs join with one empty', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
+      expect(ctx.stdout).to.contain('successfully joined')
+    })
+
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stdout()
+    .command([
+      'join',
+      '-m',
       './test/files/package1.xml',
       '-o',
       './test/files/package2.xml',
