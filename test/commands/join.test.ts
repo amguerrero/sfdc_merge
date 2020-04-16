@@ -3,11 +3,10 @@ import {expect, test} from '@oclif/test'
 
 describe('join', () => {
   const strJoin =
-    '{"Profile":{"$":{"xmlns":"http://soap.sforce.com/2006/04/metadata"},"layoutAssignments":[{"layout":["Account-Account Layout"]},{"layout":["Account-Account Layout"],"recordType":["Account.Customer"]}],"userPermissions":[{"enabled":["false"],"name":["ViewSetup"]}]}}'
+    '{"_declaration":{"$":{"version":"1.0","encoding":"UTF-8"}},"Profile":{"$":{"xmlns":"http://soap.sforce.com/2006/04/metadata"},"layoutAssignments":[{"layout":{"_":"Account-Account Layout"}},{"layout":{"_":"Account-Account Layout"},"recordType":{"_":"Account.Customer"}}],"userPermissions":[{"enabled":{"_":"false"},"name":{"_":"ViewSetup"}}]}}'
 
   test
     .stub(process, 'exit', () => 'foobar')
-    .stderr()
     .stdout()
     .command([
       'join',
@@ -17,18 +16,31 @@ describe('join', () => {
       './test/files/ours.profile-meta.xml',
       '-m',
       './test/files/theirs.profile-meta.xml',
-      '-v',
     ])
     .it('runs join', (ctx) => {
       expect(process.exit()).to.equal('foobar')
-      expect(ctx.stderr).to.contain('successfully joined')
+      expect(ctx.stdout).to.contain('successfully joined')
       expect(ctx.stdout).to.contain(strJoin)
+    })
+
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stdout()
+    .command([
+      'join',
+      '-m',
+      './test/files/package1.xml',
+      '-o',
+      './test/files/package2.xml',
+      '-v',
+    ])
+    .it('runs join verbose', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
       expect(ctx.stdout).to.contain('teatment time')
     })
 
   test
     .stub(process, 'exit', () => 'foobar')
-    .stderr()
     .stdout()
     .command([
       'join',
@@ -41,12 +53,11 @@ describe('join', () => {
     ])
     .it('runs join meld', (ctx) => {
       expect(process.exit()).to.equal('foobar')
-      expect(ctx.stderr).to.contain('successfully joined')
+      expect(ctx.stdout).to.contain('successfully joined')
     })
 
   test
     .stub(process, 'exit', () => 'foobar')
-    .stderr()
     .stdout()
     .command([
       'join',
@@ -59,7 +70,7 @@ describe('join', () => {
     ])
     .it('runs join variant unique key', (ctx) => {
       expect(process.exit()).to.equal('foobar')
-      expect(ctx.stderr).to.contain('successfully joined')
+      expect(ctx.stdout).to.contain('successfully joined')
     })
 
   test
@@ -82,7 +93,7 @@ describe('join', () => {
 
   test
     .stub(process, 'exit', () => 'foobar')
-    .stderr()
+    .stdout()
     .command([
       'join',
       '-m',
@@ -96,6 +107,6 @@ describe('join', () => {
     ])
     .it('runs join with big file', (ctx) => {
       expect(process.exit()).to.equal('foobar')
-      expect(ctx.stderr).to.contain('successfully joined')
+      expect(ctx.stdout).to.contain('successfully joined')
     })
 })
