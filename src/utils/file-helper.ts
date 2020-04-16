@@ -1,16 +1,18 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as es from 'event-stream'
-import * as xml2js from 'xml2js'
+// import * as xml2js from 'xml2js'
+import * as xmljs from 'xml-js'
 import {buildUniqueKey} from '../utils/merge-helper'
+import {startTimer, endTimer} from '../utils/verbose-helper'
 
 const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
 
-const builder = new xml2js.Builder({
-  xmldec: {version: '1.0', encoding: 'UTF-8'},
-  renderOpts: {pretty: true, indent: '    ', newline: '\n'},
-  xmlns: true,
-})
+// const builder = new xml2js.Builder({
+//   xmldec: {version: '1.0', encoding: 'UTF-8'},
+//   renderOpts: {pretty: true, indent: '    ', newline: '\n'},
+//   xmlns: true,
+// })
 
 async function fileExists(file) {
   return new Promise((resolve) => {
@@ -105,6 +107,8 @@ export async function getMetadataType(files: string[]) {
 
 function getNodeBaseJSON(meta) {
   const result = {}
+  // eslint-disable-next-line dot-notation
+  result['_declaration'] = {$: {version: '1.0', encoding: 'UTF-8'}}
   switch (meta) {
     default:
       result[meta] = {$: {xmlns: 'http://soap.sforce.com/2006/04/metadata'}}
@@ -112,13 +116,25 @@ function getNodeBaseJSON(meta) {
   }
 }
 
-async function getNodesFromXmlFile(file) {
+async function getNodesFromXmlFile(file, index, verbose: boolean) {
   return new Promise((resolve) => {
+    startTimer('reading file: ' + file + ' index: ' + index, verbose)
     fs.readFile(file, {flag: 'r', encoding: 'utf8'}, (err, data) => {
+      endTimer('reading file: ' + file + ' index: ' + index, verbose)
       if (err) throw err
-      xml2js.parseString(data, (e, r) => {
-        resolve(r)
+      startTimer('xml parsing file: ' + file + ' index: ' + index, verbose)
+      const xmljsResult = xmljs.xml2js(data, {
+        compact: true,
+        textKey: '_',
+        attributesKey: '$',
       })
+      endTimer('xml parsing file: ' + file + ' index: ' + index, verbose)
+      // console.dir(xmljsResult, {showHidden: true, depth: null, colors: true})
+      resolve(xmljsResult)
+      // xml2js.parseString(data, (e, r) => {
+      //   // console.dir(r, {showHidden: true, depth: null, colors: true})
+      //   resolve(r)
+      // })
     })
   })
   // .then((result) => {
@@ -126,8 +142,8 @@ async function getNodesFromXmlFile(file) {
   // })
 }
 
-async function getNodesOfMeta(file, meta) {
-  return getNodesFromXmlFile(file).then((result) => {
+async function getNodesOfMeta(file, index, meta, verbose: boolean) {
+  return getNodesFromXmlFile(file, index, verbose).then((result) => {
     if (result[meta]) {
       return result[meta]
     }
@@ -153,8 +169,16 @@ async function treatNodeUniqueKey(localType, localNode, configJson) {
   return result
 }
 
-async function getKeyedNodesOfMeta(file, meta, configJson) {
-  return getNodesOfMeta(file, meta).then(async (result) => {
+// eslint-disable-next-line max-params
+async function getKeyedNodesOfMeta(
+  file,
+  index,
+  meta,
+  configJson,
+  verbose: boolean,
+) {
+  return getNodesOfMeta(file, index, meta, verbose).then(async (result) => {
+    startTimer('keying file: ' + file + ' index: ' + index, verbose)
     if (result) {
       const keyedTab = []
       const tabPromise = []
@@ -168,17 +192,26 @@ async function getKeyedNodesOfMeta(file, meta, configJson) {
           Object.assign(keyedTab, elem)
         }
       })
+      endTimer('keying file: ' + file + ' index: ' + index, verbose)
       return keyedTab
     }
+    endTimer('keying file: ' + file + ' index: ' + index, verbose)
     return {}
   })
 }
 
-export async function getKeyedFiles(files: string[], meta, configJson) {
+export async function getKeyedFiles(
+  files: string[],
+  meta,
+  configJson,
+  verbose: boolean,
+) {
   const tabPromise = []
   let output
-  for (const file of files) {
-    tabPromise.push(getKeyedNodesOfMeta(file, meta, configJson))
+  for (const index of files.keys()) {
+    tabPromise.push(
+      getKeyedNodesOfMeta(files[index], index, meta, configJson, verbose),
+    )
   }
   await Promise.all(tabPromise)
     .then((data) => {
@@ -194,7 +227,16 @@ export async function writeOutput(meta, file, jsonOutput) {
   const base = getNodeBaseJSON(meta)
   Object.assign(base[meta], jsonOutput)
   if (file !== undefined && file !== '') {
-    fs.writeFileSync(file, builder.buildObject(base))
+    // fs.writeFileSync(file, builder.buildObject(base))
+    fs.writeFileSync(
+      file,
+      xmljs.js2xml(base, {
+        compact: true,
+        textKey: '_',
+        attributesKey: '$',
+        spaces: 4,
+      }),
+    )
   } else {
     console.log('joined:', JSON.stringify(base))
   }
