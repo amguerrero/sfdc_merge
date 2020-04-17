@@ -72,19 +72,23 @@ export default class Join extends Command {
       .then((result) => {
         configJson = result
       })
-      .catch((error) => {
-        console.error(error)
-        throw error
+      .catch(() => {
+        console.error('unsupported metadata Type', meta)
+        endTimer(flags.verbose, 'teatment time')
+        throw new Error('unsupported metadata Type')
       })
     endTimer(flags.verbose, 'get config time')
 
     startTimer(flags.verbose, 'get keyed files time')
     let fileKeyedJSON
-    await getKeyedFiles(flags.meta, meta, configJson, flags.verbose).then(
-      (result) => {
+    await getKeyedFiles(flags.meta, meta, configJson, flags.verbose)
+      .then((result) => {
         fileKeyedJSON = result
-      },
-    )
+      })
+      .catch((error) => {
+        console.error(error)
+        throw error
+      })
     endTimer(flags.verbose, 'get keyed files time')
 
     startTimer(flags.verbose, 'join keyed time')
@@ -98,7 +102,7 @@ export default class Join extends Command {
     }
     const reducerKeyedmeld = function (acc, curr) {
       // first loop we will use the current Permission => no merge required :D
-      if (Object.entries(acc).length === 0 && acc.constructor === Object) {
+      if (Object.entries(acc).length === 0 && acc.constructor === Array) {
         return curr
       }
       // eslint-disable-next-line new-cap

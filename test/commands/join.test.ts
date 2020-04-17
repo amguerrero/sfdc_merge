@@ -114,6 +114,18 @@ describe('join', () => {
   test
     .stub(process, 'exit', () => 'foobar')
     .stderr()
+    .command(['join', '-m', './test/files/test.object'])
+    .catch((error) => {
+      expect(error.message).to.equal('unsupported metadata Type')
+    })
+    .it('runs join unsupported metadata type', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
+      expect(ctx.stderr).to.contain('unsupported metadata Type')
+    })
+
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stderr()
     .command([
       'join',
       '-m',
