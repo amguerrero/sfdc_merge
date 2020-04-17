@@ -2,11 +2,11 @@ export function addVerboseInfo(verbose: boolean, ...args): void {
   if (verbose) console.log(...args)
 }
 
-export function startTimer(strStep: string, verbose: boolean) {
+export function startTimer(verbose: boolean, strStep: string) {
   if (verbose) console.time(strStep)
 }
 
-export function endTimer(strStep: string, verbose: boolean) {
+export function endTimer(verbose: boolean, strStep: string) {
   if (verbose) console.timeEnd(strStep)
 }
 

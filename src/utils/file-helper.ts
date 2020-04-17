@@ -16,29 +16,8 @@ const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
 //   xmlns: true,
 // })
 
-async function fileExists(file) {
-  return new Promise((resolve) => {
-    // try {
-    fs.access(file, fs.constants.F_OK, (error) => {
-      if (error) {
-        console.error(`${file} is not accessible`)
-        resolve(false)
-      }
-      resolve(true)
-    })
-  })
-}
-
 export async function allFilesExist(files: string[]) {
-  const tabPromise = []
-  let output
-  for (const key of files) {
-    tabPromise.push(fileExists(key))
-  }
-  await Promise.all(tabPromise).then((data) => {
-    output = !data.includes(false)
-  })
-  return output
+  return Promise.all(files.map((file) => fsp.access(file, fs.constants.F_OK)))
 }
 
 async function getMetafromFile(file) {
@@ -150,8 +129,8 @@ export async function getKeyedFiles(
         .readFile(files[index], {flag: 'r', encoding: 'utf8'})
         .then((data) => {
           startTimer(
-            'xml parsing file: ' + files[index] + ' index: ' + index,
             verbose,
+            'xml parsing file: ' + files[index] + ' index: ' + index,
           )
           const xmljsResult = xmljs.xml2js(data, {
             compact: true,
@@ -159,8 +138,8 @@ export async function getKeyedFiles(
             attributesKey: '$',
           })
           endTimer(
-            'xml parsing file: ' + files[index] + ' index: ' + index,
             verbose,
+            'xml parsing file: ' + files[index] + ' index: ' + index,
           )
           return xmljsResult
         })
@@ -172,8 +151,8 @@ export async function getKeyedFiles(
         })
         .then(async (result) => {
           startTimer(
-            'keying file: ' + files[index] + ' index: ' + index,
             verbose,
+            'keying file: ' + files[index] + ' index: ' + index,
           )
           if (result) {
             const keyedTab = []
@@ -191,12 +170,12 @@ export async function getKeyedFiles(
             }
             await Promise.all(tabPromise)
             endTimer(
-              'keying file: ' + files[index] + ' index: ' + index,
               verbose,
+              'keying file: ' + files[index] + ' index: ' + index,
             )
             return keyedTab
           }
-          endTimer('keying file: ' + files[index] + ' index: ' + index, verbose)
+          endTimer(verbose, 'keying file: ' + files[index] + ' index: ' + index)
           return {}
         }),
     )

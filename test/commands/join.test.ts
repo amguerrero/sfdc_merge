@@ -101,9 +101,32 @@ describe('join', () => {
     .stub(process, 'exit', () => 'foobar')
     .stderr()
     .command(['join', '-m', './test/files/non_existing.profile-meta.xml'])
+    .catch((error) => {
+      expect(error.message).to.equal(
+        'at least a metadataFile is not accessible',
+      )
+    })
     .it('runs join with inexisting file', (ctx) => {
       expect(process.exit()).to.equal('foobar')
       expect(ctx.stderr).to.contain('at least a metadataFile is not accessible')
+    })
+
+  test
+    .stub(process, 'exit', () => 'foobar')
+    .stderr()
+    .command([
+      'join',
+      '-m',
+      './test/files/ancestor.profile-meta.xml',
+      '-m',
+      './test/files/package1.xml',
+    ])
+    .catch((error) => {
+      expect(error.message).to.equal('multiple metadataTypes given as input')
+    })
+    .it('runs join multiple different metadataTypes', (ctx) => {
+      expect(process.exit()).to.equal('foobar')
+      expect(ctx.stderr).to.contain('multiple metadataTypes given as input')
     })
 
   test

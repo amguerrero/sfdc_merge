@@ -37,22 +37,22 @@ export default class Join extends Command {
 
   async run() {
     const {flags} = this.parse(Join)
-    startTimer('teatment time', flags.verbose)
+    startTimer(flags.verbose, 'teatment time')
 
-    startTimer('input check time', flags.verbose)
+    startTimer(flags.verbose, 'input check time')
     if (flags.meta === undefined) {
       console.error('list of permissions to merge is empty')
-      endTimer('teatment time', flags.verbose)
+      endTimer(flags.verbose, 'teatment time')
       return ''
     }
-    if (!(await allFilesExist(flags.meta))) {
+    await allFilesExist(flags.meta).catch(() => {
       console.error('at least a metadataFile is not accessible')
-      endTimer('teatment time', flags.verbose)
-      return ''
-    }
-    endTimer('input check time', flags.verbose)
+      endTimer(flags.verbose, 'teatment time')
+      throw new Error('at least a metadataFile is not accessible')
+    })
+    endTimer(flags.verbose, 'input check time')
 
-    startTimer('get metadaType time', flags.verbose)
+    startTimer(flags.verbose, 'get metadaType time')
     let meta
     await getMetadataType(flags.meta)
       .then((result) => {
@@ -61,11 +61,12 @@ export default class Join extends Command {
       })
       .catch((error) => {
         console.error(error)
-        throw error
+        endTimer(flags.verbose, 'teatment time')
+        throw new Error(error)
       })
-    endTimer('get metadaType time', flags.verbose)
+    endTimer(flags.verbose, 'get metadaType time')
 
-    startTimer('get config time', flags.verbose)
+    startTimer(flags.verbose, 'get config time')
     let configJson
     await getMetaConfigJSON(meta)
       .then((result) => {
@@ -75,18 +76,18 @@ export default class Join extends Command {
         console.error(error)
         throw error
       })
-    endTimer('get config time', flags.verbose)
+    endTimer(flags.verbose, 'get config time')
 
-    startTimer('get keyed files time', flags.verbose)
+    startTimer(flags.verbose, 'get keyed files time')
     let fileKeyedJSON
     await getKeyedFiles(flags.meta, meta, configJson, flags.verbose).then(
       (result) => {
         fileKeyedJSON = result
       },
     )
-    endTimer('get keyed files time', flags.verbose)
+    endTimer(flags.verbose, 'get keyed files time')
 
-    startTimer('join keyed time', flags.verbose)
+    startTimer(flags.verbose, 'join keyed time')
     const reducerKeyedLatest = function (acc, curr) {
       // first loop we will use the current Permission => no merge required :D
       if (Object.entries(acc).length === 0 && acc.constructor === Object) {
@@ -161,9 +162,9 @@ export default class Join extends Command {
     } else {
       mergedKeyed = fileKeyedJSON.reduce(reducerKeyedmeld, [])
     }
-    endTimer('join keyed time', flags.verbose)
+    endTimer(flags.verbose, 'join keyed time')
 
-    startTimer('transform keyed to unkeyed', flags.verbose)
+    startTimer(flags.verbose, 'transform keyed to unkeyed')
     const unKeyed = {}
     Object.keys(mergedKeyed)
       .sort()
@@ -178,13 +179,13 @@ export default class Join extends Command {
           unKeyed[mergedKeyed[key].nodeType] = mergedKeyed[key].node
         }
       })
-    endTimer('transform keyed to unkeyed', flags.verbose)
+    endTimer(flags.verbose, 'transform keyed to unkeyed')
 
-    startTimer('writing keyed time', flags.verbose)
+    startTimer(flags.verbose, 'writing keyed time')
     await writeOutput(meta, flags.output, unKeyed)
-    endTimer('writing keyed time', flags.verbose)
+    endTimer(flags.verbose, 'writing keyed time')
 
-    endTimer('teatment time', flags.verbose)
+    endTimer(flags.verbose, 'teatment time')
     console.log('sfdx-md-merge-driver:', 'successfully joined.')
   }
 }
