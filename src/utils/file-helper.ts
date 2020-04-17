@@ -1,40 +1,24 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as es from 'event-stream'
-import * as xml2js from 'xml2js'
+// import * as xml2js from 'xml2js'
+import * as xmljs from 'xml-js'
 import {buildUniqueKey} from '../utils/merge-helper'
+import {startTimer, endTimer} from '../utils/verbose-helper'
 
+const fsp = fs.promises
 const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
+const optXml2js = {compact: true, textKey: '_', attributesKey: '$'}
+const optJs2xml = {compact: true, textKey: '_', attributesKey: '$', spaces: 4}
 
-const builder = new xml2js.Builder({
-  xmldec: {version: '1.0', encoding: 'UTF-8'},
-  renderOpts: {pretty: true, indent: '    ', newline: '\n'},
-  xmlns: true,
-})
-
-async function fileExists(file) {
-  return new Promise((resolve) => {
-    // try {
-    fs.access(file, fs.constants.F_OK, (error) => {
-      if (error) {
-        console.error(`${file} is not accessible`)
-        resolve(false)
-      }
-      resolve(true)
-    })
-  })
-}
+// const builder = new xml2js.Builder({
+//   xmldec: {version: '1.0', encoding: 'UTF-8'},
+//   renderOpts: {pretty: true, indent: '    ', newline: '\n'},
+//   xmlns: true,
+// })
 
 export async function allFilesExist(files: string[]) {
-  const tabPromise = []
-  let output
-  for (const key of files) {
-    tabPromise.push(fileExists(key))
-  }
-  await Promise.all(tabPromise).then((data) => {
-    output = !data.includes(false)
-  })
-  return output
+  return Promise.all(files.map((file) => fsp.access(file, fs.constants.F_OK)))
 }
 
 async function getMetafromFile(file) {
@@ -68,43 +52,35 @@ function getConfigPath(meta) {
 }
 
 export async function getMetaConfigJSON(meta) {
-  return new Promise((resolve) => {
-    fs.readFile(
-      getConfigPath(meta),
-      {flag: 'r', encoding: 'utf8'},
-      (err, data) => {
-        if (err) throw err
-        resolve(JSON.parse(data))
-      },
-    )
-  })
+  return fsp
+    .readFile(getConfigPath(meta), {flag: 'r', encoding: 'utf8'})
+    .then((data) => {
+      return JSON.parse(data)
+    })
 }
 
 export async function getMetadataType(files: string[]) {
-  const tabPromise = []
-  let output
-  for (const key of files) {
-    tabPromise.push(getMetafromFile(key))
-  }
-  await Promise.all(tabPromise)
-    .then((data) => {
-      data = data.filter((el, i, a) => el !== undefined && i === a.indexOf(el))
-      if (data.length > 1) {
-        // eslint-disable-next-line no-throw-literal
-        throw 'multiple metadataTypes given as input'
-      }
-      output = data.filter(
-        (el, i, a) => el !== undefined && i === a.indexOf(el),
-      )[0]
-    })
-    .catch((error) => {
-      throw error
-    })
-  return output
+  return Promise.all(
+    files.map((file) => {
+      return getMetafromFile(file)
+    }),
+  ).then((data) => {
+    data = data.filter((el, i, a) => el !== undefined && i === a.indexOf(el))
+    if (data.length > 1) {
+      // eslint-disable-next-line no-throw-literal
+      throw 'multiple metadataTypes given as input'
+    }
+    const filteredData = data.filter(
+      (el, i, a) => el !== undefined && i === a.indexOf(el),
+    )
+    return filteredData[0]
+  })
 }
 
 function getNodeBaseJSON(meta) {
   const result = {}
+  // eslint-disable-next-line dot-notation
+  result['_declaration'] = {$: {version: '1.0', encoding: 'UTF-8'}}
   switch (meta) {
     default:
       result[meta] = {$: {xmlns: 'http://soap.sforce.com/2006/04/metadata'}}
@@ -112,89 +88,104 @@ function getNodeBaseJSON(meta) {
   }
 }
 
-async function getNodesFromXmlFile(file) {
-  return new Promise((resolve) => {
-    fs.readFile(file, {flag: 'r', encoding: 'utf8'}, (err, data) => {
-      if (err) throw err
-      xml2js.parseString(data, (e, r) => {
-        resolve(r)
-      })
-    })
-  })
-  // .then((result) => {
-  //   return result
-  // })
-}
-
-async function getNodesOfMeta(file, meta) {
-  return getNodesFromXmlFile(file).then((result) => {
-    if (result[meta]) {
-      return result[meta]
-    }
-    return {}
-  })
-}
-
-async function treatNodeUniqueKey(localType, localNode, configJson) {
-  const result = []
-  let nodelist = localNode
-  if (!Array.isArray(nodelist)) {
-    nodelist = [nodelist]
-  }
-  nodelist.forEach((node) => {
-    const uniqueNodeKey = buildUniqueKey(node, localType, configJson)
-    if (uniqueNodeKey) {
-      result[uniqueNodeKey] = {
-        nodeType: localType,
-        node: node,
-      }
-    }
-  })
-  return result
-}
-
-async function getKeyedNodesOfMeta(file, meta, configJson) {
-  return getNodesOfMeta(file, meta).then(async (result) => {
-    if (result) {
-      const keyedTab = []
-      const tabPromise = []
-      for (const localType of Object.keys(result)) {
-        tabPromise.push(
-          treatNodeUniqueKey(localType, result[localType], configJson),
-        )
-      }
-      await Promise.all(tabPromise).then((data) => {
-        for (const elem of data) {
-          Object.assign(keyedTab, elem)
-        }
-      })
-      return keyedTab
-    }
-    return {}
-  })
-}
-
-export async function getKeyedFiles(files: string[], meta, configJson) {
-  const tabPromise = []
-  let output
-  for (const file of files) {
-    tabPromise.push(getKeyedNodesOfMeta(file, meta, configJson))
-  }
-  await Promise.all(tabPromise)
-    .then((data) => {
-      output = data
-    })
-    .catch((error) => {
-      throw error
-    })
-  return output
+export async function getKeyedFiles(
+  files: string[],
+  meta,
+  configJson,
+  verbose: boolean,
+) {
+  return Promise.all(
+    files.map((file, index) => {
+      startTimer(
+        verbose,
+        'file: ' +
+          file +
+          ' index: ' +
+          index.toString().padStart(3) +
+          ' reading',
+      )
+      return fsp
+        .readFile(file, {flag: 'r', encoding: 'utf8'})
+        .then((data) => {
+          endTimer(
+            verbose,
+            'file: ' +
+              file +
+              ' index: ' +
+              index.toString().padStart(3) +
+              ' reading',
+          )
+          startTimer(
+            verbose,
+            'file: ' +
+              file +
+              ' index: ' +
+              index.toString().padStart(3) +
+              ' parsing xml',
+          )
+          const xmljsResult = xmljs.xml2js(data, optXml2js)
+          endTimer(
+            verbose,
+            'file: ' +
+              file +
+              ' index: ' +
+              index.toString().padStart(3) +
+              ' parsing xml',
+          )
+          return xmljsResult
+        })
+        .then((result) => {
+          if (result[meta]) {
+            return result[meta]
+          }
+          return {}
+        })
+        .then((data) => {
+          startTimer(
+            verbose,
+            'file: ' +
+              file +
+              ' index: ' +
+              index.toString().padStart(3) +
+              ' keying',
+          )
+          const keyedTab = []
+          for (const localType of Object.keys(data)) {
+            const result = []
+            let nodelist = data[localType]
+            if (!Array.isArray(nodelist)) {
+              nodelist = [nodelist]
+            }
+            nodelist.forEach((node) => {
+              const uniqueNodeKey = buildUniqueKey(node, localType, configJson)
+              if (uniqueNodeKey) {
+                result[uniqueNodeKey] = {
+                  nodeType: localType,
+                  node: node,
+                }
+              }
+            })
+            Object.assign(keyedTab, result)
+          }
+          endTimer(
+            verbose,
+            'file: ' +
+              file +
+              ' index: ' +
+              index.toString().padStart(3) +
+              ' keying',
+          )
+          return keyedTab
+        })
+    }),
+  )
 }
 
 export async function writeOutput(meta, file, jsonOutput) {
   const base = getNodeBaseJSON(meta)
   Object.assign(base[meta], jsonOutput)
   if (file !== undefined && file !== '') {
-    fs.writeFileSync(file, builder.buildObject(base))
+    fsp.writeFile(file, xmljs.js2xml(base, optJs2xml), {encoding: 'utf8'})
   } else {
     console.log('joined:', JSON.stringify(base))
   }

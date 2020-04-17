@@ -6,6 +6,7 @@
     </types>
     <types>
         <members>monprofile</members>
+        <members>test</members>
         <name>Profile</name>
     </types>
     <types>

@@ -6,7 +6,7 @@ import {
   writeOutput,
   allFilesExist,
 } from '../utils/file-helper'
-import {addVerboseInfo, printVerboseInfo} from '../utils/verbose-helper'
+import {addVerboseInfo, startTimer, endTimer} from '../utils/verbose-helper'
 import {JSONPath} from 'jsonpath-plus'
 
 export default class Join extends Command {
@@ -36,67 +36,74 @@ export default class Join extends Command {
   }
 
   async run() {
-    const tStart = Date.now()
-    const verboseTab = []
     const {flags} = this.parse(Join)
+    startTimer(flags.verbose, 'teatment time')
 
-    let stepStart = Date.now()
+    startTimer(flags.verbose, 'input check time')
     if (flags.meta === undefined) {
       console.error('list of permissions to merge is empty')
-      if (flags.verbose) printVerboseInfo(verboseTab, tStart)
+      endTimer(flags.verbose, 'teatment time')
       return ''
     }
-    if (!(await allFilesExist(flags.meta))) {
+    await allFilesExist(flags.meta).catch(() => {
       console.error('at least a metadataFile is not accessible')
-      if (flags.verbose) printVerboseInfo(verboseTab, tStart)
-      return ''
-    }
-    if (flags.verbose)
-      addVerboseInfo(verboseTab, stepStart, 'input check time:')
+      endTimer(flags.verbose, 'teatment time')
+      throw new Error('at least a metadataFile is not accessible')
+    })
+    endTimer(flags.verbose, 'input check time')
 
-    stepStart = Date.now()
+    startTimer(flags.verbose, 'get metadaType time')
     let meta
     await getMetadataType(flags.meta)
       .then((result) => {
         meta = result
-        verboseTab.push({'meta to join:': meta})
+        addVerboseInfo(flags.verbose, 'meta to join:', meta)
       })
       .catch((error) => {
         console.error(error)
-        throw error
+        endTimer(flags.verbose, 'teatment time')
+        throw new Error(error)
       })
-    if (flags.verbose)
-      addVerboseInfo(verboseTab, stepStart, 'get metadaType time:')
+    endTimer(flags.verbose, 'get metadaType time')
 
-    stepStart = Date.now()
+    startTimer(flags.verbose, 'get config time')
     let configJson
     await getMetaConfigJSON(meta)
       .then((result) => {
         configJson = result
       })
+      .catch(() => {
+        console.error('unsupported metadata Type', meta)
+        endTimer(flags.verbose, 'teatment time')
+        throw new Error('unsupported metadata Type')
+      })
+    endTimer(flags.verbose, 'get config time')
+
+    startTimer(flags.verbose, 'get keyed files time')
+    let fileKeyedJSON
+    await getKeyedFiles(flags.meta, meta, configJson, flags.verbose)
+      .then((result) => {
+        fileKeyedJSON = result
+      })
       .catch((error) => {
         console.error(error)
         throw error
       })
-    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'get config time:')
+    endTimer(flags.verbose, 'get keyed files time')
 
-    stepStart = Date.now()
-    let fileKeyedJSON
-    await getKeyedFiles(flags.meta, meta, configJson).then((result) => {
-      fileKeyedJSON = result
-    })
-    if (flags.verbose)
-      addVerboseInfo(verboseTab, stepStart, 'get keyed files time:')
-
-    stepStart = Date.now()
-    const reducerKeyed = function (acc, curr) {
+    startTimer(flags.verbose, 'join keyed time')
+    const reducerKeyedLatest = function (acc, curr) {
       // first loop we will use the current Permission => no merge required :D
       if (Object.entries(acc).length === 0 && acc.constructor === Object) {
         return curr
       }
-      if (flags.algo === 'latest') {
-        Object.assign(acc, curr)
-        return acc
+      Object.assign(acc, curr)
+      return acc
+    }
+    const reducerKeyedmeld = function (acc, curr) {
+      // first loop we will use the current Permission => no merge required :D
+      if (Object.entries(acc).length === 0 && acc.constructor === Array) {
+        return curr
       }
       // eslint-disable-next-line new-cap
       const jspath = JSONPath({
@@ -105,7 +112,6 @@ export default class Join extends Command {
         resultType: 'parentProperty',
         wrap: false,
       })
-      // eslint-disable-next-line new-cap
       if (jspath) {
         Object.keys(curr).forEach((p) => {
           if (
@@ -113,12 +119,38 @@ export default class Join extends Command {
             configJson[curr[p].nodeType] &&
             jspath.includes(curr[p].nodeType)
           ) {
+            // make sure we aggregate only the subKeys elements, the rest remains only curr
             configJson[curr[p].nodeType].subKeys.forEach((att) => {
-              const joined = [...acc[p].node[att], ...curr[p].node[att]]
-              acc[p].node[att] = joined.filter(
-                (item, index) => joined.indexOf(item) === index,
-              )
+              if (acc[p].node[att]) {
+                let accArray = []
+                if (Array.isArray(acc[p].node[att])) {
+                  accArray = acc[p].node[att]
+                } else if (acc[p].node[att] !== undefined) {
+                  accArray = [acc[p].node[att]]
+                }
+                let currArray = []
+                if (Array.isArray(curr[p].node[att])) {
+                  currArray = curr[p].node[att]
+                } else if (curr[p].node[att] !== undefined) {
+                  currArray = [curr[p].node[att]]
+                }
+                const mapper = function (acc, curr) {
+                  if (typeof curr === 'string') {
+                    acc[curr] = curr
+                  } else {
+                    acc[curr._] = curr
+                  }
+                  return acc
+                }
+                accArray = accArray.reduce(mapper, [])
+                currArray = currArray.reduce(mapper, [])
+                Object.assign(accArray, currArray)
+                const result = []
+                for (const val of Object.values(accArray)) result.push(val)
+                curr[p].node[att] = result
+              }
             })
+            Object.assign(acc[p], curr[p])
           } else {
             acc[p] = curr[p]
           }
@@ -128,10 +160,15 @@ export default class Join extends Command {
       }
       return acc
     }
-    const mergedKeyed = fileKeyedJSON.reduce(reducerKeyed, {})
-    if (flags.verbose) addVerboseInfo(verboseTab, stepStart, 'join keyed time:')
+    let mergedKeyed
+    if (flags.algo === 'latest') {
+      mergedKeyed = fileKeyedJSON.reduce(reducerKeyedLatest, {})
+    } else {
+      mergedKeyed = fileKeyedJSON.reduce(reducerKeyedmeld, [])
+    }
+    endTimer(flags.verbose, 'join keyed time')
 
-    stepStart = Date.now()
+    startTimer(flags.verbose, 'transform keyed to unkeyed')
     const unKeyed = {}
     Object.keys(mergedKeyed)
       .sort()
@@ -146,15 +183,13 @@ export default class Join extends Command {
           unKeyed[mergedKeyed[key].nodeType] = mergedKeyed[key].node
         }
       })
-    if (flags.verbose)
-      addVerboseInfo(verboseTab, stepStart, 'transform keyed to unkeyed:')
+    endTimer(flags.verbose, 'transform keyed to unkeyed')
 
-    stepStart = Date.now()
+    startTimer(flags.verbose, 'writing keyed time')
     await writeOutput(meta, flags.output, unKeyed)
-    if (flags.verbose)
-      addVerboseInfo(verboseTab, stepStart, 'writing keyed time:')
+    endTimer(flags.verbose, 'writing keyed time')
 
-    if (flags.verbose) printVerboseInfo(verboseTab, tStart)
-    console.error('sfdx-md-merge-driver:', 'successfully joined.')
+    endTimer(flags.verbose, 'teatment time')
+    console.log('sfdx-md-merge-driver:', 'successfully joined.')
   }
 }
