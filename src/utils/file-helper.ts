@@ -185,7 +185,9 @@ export async function writeOutput(meta, file, jsonOutput) {
   const base = getNodeBaseJSON(meta)
   Object.assign(base[meta], jsonOutput)
   if (file !== undefined && file !== '') {
-    fsp.writeFile(file, xmljs.js2xml(base, optJs2xml), {encoding: 'utf8'})
+    fsp.writeFile(file, xmljs.js2xml(base, optJs2xml).concat('\n'), {
+      encoding: 'utf8',
+    })
   } else {
     console.log('joined:', JSON.stringify(base))
   }
