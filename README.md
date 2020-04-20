@@ -91,7 +91,6 @@ $ npm uninstall -g sfdx-md-merge-driver
 * [`sfdx-md-merge-driver install`](#sfdx-md-merge-driver-install)
 * [`sfdx-md-merge-driver join`](#sfdx-md-merge-driver-join)
 * [`sfdx-md-merge-driver merge %O %A %B [%P]`](#sfdx-md-merge-driver-merge-o-a-b-p)
-* [`sfdx-md-merge-driver sort`](#sfdx-md-merge-driver-sort)
 * [`sfdx-md-merge-driver uninstall`](#sfdx-md-merge-driver-uninstall)
 
 ## `sfdx-md-merge-driver help [COMMAND]`
@@ -176,22 +175,6 @@ OPTIONS
 ```
 
 _See code: [src\commands\merge.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.21/src\commands\merge.ts)_
-
-## `sfdx-md-merge-driver sort`
-
-describe the command here
-
-```
-USAGE
-  $ sfdx-md-merge-driver sort
-
-OPTIONS
-  -h, --help       show CLI help
-  -m, --meta=meta  path(s) to file(s) to sort
-  -v, --verbose    verbose mode
-```
-
-_See code: [src\commands\sort.ts](https://github.com/KevinGossentCap/sfdx-md-merge-driver/blob/v0.1.21/src\commands\sort.ts)_
 
 ## `sfdx-md-merge-driver uninstall`
 
