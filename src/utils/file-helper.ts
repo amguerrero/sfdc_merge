@@ -5,6 +5,7 @@ import * as es from 'event-stream'
 import * as xmljs from 'xml-js'
 import {buildUniqueKey} from '../utils/merge-helper'
 import {startTimer, endTimer} from '../utils/verbose-helper'
+import {constants} from '../utils/constants'
 
 const fsp = fs.promises
 const regGenericMatch = /(?<=<)(\w+)(?= +xmlns)/
@@ -67,8 +68,7 @@ export async function getMetadataType(files: string[]) {
   ).then((data) => {
     data = data.filter((el, i, a) => el !== undefined && i === a.indexOf(el))
     if (data.length > 1) {
-      // eslint-disable-next-line no-throw-literal
-      throw 'multiple metadataTypes given as input'
+      throw constants.ERR_META_MULTI
     }
     const filteredData = data.filter(
       (el, i, a) => el !== undefined && i === a.indexOf(el),

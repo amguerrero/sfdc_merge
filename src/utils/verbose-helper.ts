@@ -18,6 +18,6 @@ export function endTimer(verbose: boolean, strStep: string) {
 //     for (const elem of verboseTab) {
 //       console.log(Object.keys(elem)[0], Object.values(elem)[0])
 //     }
-//     console.timeEnd('teatment time')
+//     console.timeEnd(constants.steps.global)
 //   }
 // }
