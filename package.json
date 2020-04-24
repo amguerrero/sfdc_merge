@@ -6,7 +6,7 @@
   "bin": {
     "sfdx-md-merge-driver": "./bin/run"
   },
-  "bugs": "https://github.com/KevinGossentCap/sfdx-md-merge-driver/issues",
+  "bugs": "https://github.com/KevinGossentCap/sfdc_merge/issues",
   "man": "./sfdx-md-merge-driver.1",
   "dependencies": {
     "@oclif/command": "^1.5.19",
@@ -67,7 +67,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/KevinGossentCap/sfdx-md-merge-driver",
+  "homepage": "https://github.com/KevinGossentCap/sfdc_merge",
   "keywords": [
     "sfdx",
     "salesforce",
@@ -89,7 +89,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "KevinGossentCap/sfdx-md-merge-driver",
+  "repository": "KevinGossentCap/sfdc_merge",
   "scripts": {
     "docs": "tail -n +2 README.md | marked-man --manual 'User Commands' --version \"$npm_package_name@$npm_package_version\" > sfdx-md-merge-driver.1",
     "prerelease": "yarn test",
