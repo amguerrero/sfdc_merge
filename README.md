@@ -1,11 +1,11 @@
 # sfdx-md-merge-driver
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/sfdx-md-merge-driver.svg)](https://npmjs.org/package/sfdx-md-merge-driver)
-[![CircleCI](https://circleci.com/gh/jayree/sfdx-md-merge-driver/tree/master.svg?style=shield)](https://circleci.com/gh/jayree/sfdx-md-merge-driver/tree/master)
+[![Version](https://img.shields.io/npm/v/sfdx-md-merge-driver.svg)](https://npmjs.org/package/@kgossent/sfdx-md-merge-driver)
+<!-- [![CircleCI](https://circleci.com/gh/jayree/sfdx-md-merge-driver/tree/master.svg?style=shield)](https://circleci.com/gh/jayree/sfdx-md-merge-driver/tree/master)
 [![Appveyor CI](https://ci.appveyor.com/api/projects/status/github/jayree/sfdx-md-merge-driver?branch=master&svg=true)](https://ci.appveyor.com/project/jayree/sfdx-md-merge-driver/branch/master)
-[![Codecov](https://codecov.io/gh/jayree/sfdx-md-merge-driver/branch/master/graph/badge.svg)](https://codecov.io/gh/jayree/sfdx-md-merge-driver)
-[![Downloads/week](https://img.shields.io/npm/dw/sfdx-md-merge-driver.svg)](https://npmjs.org/package/sfdx-md-merge-driver)
+[![Codecov](https://codecov.io/gh/jayree/sfdx-md-merge-driver/branch/master/graph/badge.svg)](https://codecov.io/gh/jayree/sfdx-md-merge-driver) -->
+[![Downloads/week](https://img.shields.io/npm/dw/sfdx-md-merge-driver.svg)](https://npmjs.org/package/@kgossent/sfdx-md-merge-driver)
 [![License](https://img.shields.io/npm/l/sfdx-md-merge-driver.svg)](https://github.com/jayree/sfdx-md-merge-driver/blob/master/package.json)
 
 This is a git merge driver specific for Salesforce.com Metadata (Profiles, Permission Sets, Custom Labels).
@@ -91,7 +91,6 @@ $ npm uninstall -g sfdx-md-merge-driver
 * [`sfdx-md-merge-driver install`](#sfdx-md-merge-driver-install)
 * [`sfdx-md-merge-driver join`](#sfdx-md-merge-driver-join)
 * [`sfdx-md-merge-driver merge %O %A %B [%P]`](#sfdx-md-merge-driver-merge-o-a-b-p)
-* [`sfdx-md-merge-driver sort`](#sfdx-md-merge-driver-sort)
 * [`sfdx-md-merge-driver uninstall`](#sfdx-md-merge-driver-uninstall)
 
 ## `sfdx-md-merge-driver help [COMMAND]`
@@ -148,12 +147,11 @@ USAGE
   $ sfdx-md-merge-driver join
 
 OPTIONS
-  -a, --algo=latest|meld   [default: latest] algorithm for join, latest or meld
-  -h, --help               show CLI help
-  -l, --loglevel=loglevel  level of verbose details
-  -m, --meta=meta          (required) path(s) to file(s) to join
-  -o, --output=output      path to write output
-  -v, --verbose            verbose mode
+  -a, --algo=latest|meld  [default: latest] algorithm for join, latest or meld
+  -h, --help              show CLI help
+  -m, --meta=meta         (required) path(s) to file(s) to join
+  -o, --output=output     path to write output
+  -v, --verbose           verbose mode
 ```
 
 _See code: [src\commands\join.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.24/src\commands\join.ts)_
@@ -177,23 +175,6 @@ OPTIONS
 ```
 
 _See code: [src\commands\merge.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.24/src\commands\merge.ts)_
-
-## `sfdx-md-merge-driver sort`
-
-describe the command here
-
-```
-USAGE
-  $ sfdx-md-merge-driver sort
-
-OPTIONS
-  -h, --help               show CLI help
-  -l, --loglevel=loglevel  level of verbose details
-  -m, --meta=meta          (required) path(s) to file(s) to sort
-  -v, --verbose            verbose mode
-```
-
-_See code: [src\commands\sort.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.24/src\commands\sort.ts)_
 
 ## `sfdx-md-merge-driver uninstall`
 
