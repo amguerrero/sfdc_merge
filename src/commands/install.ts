@@ -90,14 +90,14 @@ hello world from ./src/hello.ts!
         attrContents = fs
           .readFileSync(attrFile, 'utf8')
           .split(/\r?\n/)
-          .filter(line => !line.match(RE))
+          .filter((line) => !line.match(RE))
           .join('\n')
       } catch (error) {}
       if (attrContents && !attrContents.match(/[\n\r]$/g)) {
-        attrContents = '\n'
+        attrContents += '\n'
       }
       attrContents += flags.files
-        .map(f => `${f} merge=${flags.name}`)
+        .map((f) => `${f} merge=${flags.name}`)
         .join('\n')
       attrContents += '\n'
       fs.writeFileSync(attrFile, attrContents)
