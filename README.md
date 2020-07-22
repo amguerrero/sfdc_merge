@@ -62,7 +62,7 @@ $ npm install -g @kgossent/sfdx-md-merge-driver
 $ sfdx-md-merge-driver COMMAND
 running command...
 $ sfdx-md-merge-driver (-v|--version|version)
-@kgossent/sfdx-md-merge-driver/0.1.28 win32-x64 node-v12.16.2
+@kgossent/sfdx-md-merge-driver/0.1.29 win32-x64 node-v12.18.2
 $ sfdx-md-merge-driver --help [COMMAND]
 USAGE
   $ sfdx-md-merge-driver COMMAND
@@ -90,7 +90,8 @@ $ npm uninstall -g sfdx-md-merge-driver
 * [`sfdx-md-merge-driver help [COMMAND]`](#sfdx-md-merge-driver-help-command)
 * [`sfdx-md-merge-driver install`](#sfdx-md-merge-driver-install)
 * [`sfdx-md-merge-driver join`](#sfdx-md-merge-driver-join)
-* [`sfdx-md-merge-driver merge %O %A %B [%P]`](#sfdx-md-merge-driver-merge-o-a-b-p)
+* [`sfdx-md-merge-driver merge`](#sfdx-md-merge-driver-merge)
+* [`sfdx-md-merge-driver sort`](#sfdx-md-merge-driver-sort)
 * [`sfdx-md-merge-driver uninstall`](#sfdx-md-merge-driver-uninstall)
 
 ## `sfdx-md-merge-driver help [COMMAND]`
@@ -120,7 +121,8 @@ USAGE
 
 OPTIONS
   -d, --driver=driver
-      [default: npx sfdx-md-merge-driver merge %O %A %B %P] string to install as the driver in the git configuration
+      [default: sfdx-md-merge-driver merge -o %O -a %A -b %B -p %P] string to install as the driver in the git 
+      configuration
 
   -g, --global
       install to your user-level git configuration
@@ -136,7 +138,7 @@ OPTIONS
       Filenames that will trigger this driver.
 ```
 
-_See code: [src\commands\install.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.28/src\commands\install.ts)_
+_See code: [src\commands\install.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.29/src\commands\install.ts)_
 
 ## `sfdx-md-merge-driver join`
 
@@ -147,34 +149,50 @@ USAGE
   $ sfdx-md-merge-driver join
 
 OPTIONS
-  -a, --algo=latest|meld  [default: latest] algorithm for join, latest or meld
-  -h, --help              show CLI help
-  -m, --meta=meta         (required) path(s) to file(s) to join
-  -o, --output=output     path to write output
-  -v, --verbose           verbose mode
+  -a, --algo=latest|meld   [default: latest] algorithm for join, latest or meld
+  -h, --help               show CLI help
+  -l, --loglevel=loglevel  level of verbose details
+  -m, --meta=meta          (required) path(s) to file(s) to join
+  -o, --output=output      path to write output
+  -v, --verbose            verbose mode
 ```
 
-_See code: [src\commands\join.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.28/src\commands\join.ts)_
+_See code: [src\commands\join.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.29/src\commands\join.ts)_
 
-## `sfdx-md-merge-driver merge %O %A %B [%P]`
+## `sfdx-md-merge-driver merge`
 
 Check for conflicts and merge them if possible.
 
 ```
 USAGE
-  $ sfdx-md-merge-driver merge %O %A %B [%P]
-
-ARGUMENTS
-  %O  ancestor’s version
-  %A  current version
-  %B  other branches' version
-  %P  pathname in which the merged result will be stored
+  $ sfdx-md-merge-driver merge
 
 OPTIONS
-  -h, --help  show CLI help
+  -a, --current=current    (required) current version
+  -b, --other=other        (required) other branches’ version
+  -h, --help               show CLI help
+  -o, --ancestor=ancestor  (required) ancestor’s version
+  -p, --output=output      pathname in which the merged result will be stored
 ```
 
-_See code: [src\commands\merge.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.28/src\commands\merge.ts)_
+_See code: [src\commands\merge.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.29/src\commands\merge.ts)_
+
+## `sfdx-md-merge-driver sort`
+
+describe the command here
+
+```
+USAGE
+  $ sfdx-md-merge-driver sort
+
+OPTIONS
+  -h, --help               show CLI help
+  -l, --loglevel=loglevel  level of verbose details
+  -m, --meta=meta          (required) path(s) to file(s) to sort
+  -v, --verbose            verbose mode
+```
+
+_See code: [src\commands\sort.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.29/src\commands\sort.ts)_
 
 ## `sfdx-md-merge-driver uninstall`
 
@@ -190,7 +208,7 @@ OPTIONS
   -n, --name=name  [default: sfdx-md-merge-driver] String to use as the merge driver name in your configuration.
 ```
 
-_See code: [src\commands\uninstall.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.28/src\commands\uninstall.ts)_
+_See code: [src\commands\uninstall.ts](https://github.com/KevinGossentCap/sfdc_merge/blob/v0.1.29/src\commands\uninstall.ts)_
 <!-- commandsstop -->
 
 # Author
