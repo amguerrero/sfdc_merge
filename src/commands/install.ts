@@ -26,7 +26,7 @@ hello world from ./src/hello.ts!
     driver: flags.string({
       char: 'd',
       description: 'string to install as the driver in the git configuration',
-      default: 'npx sfdx-md-merge-driver merge %O %A %B %P',
+      default: 'sfdx-md-merge-driver merge -o %O -a %A -b %B -p %P',
     }),
     name: flags.string({
       char: 'n',
