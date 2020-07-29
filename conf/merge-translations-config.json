@@ -1,0 +1,38 @@
+{
+  "customApplications": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "customLabels": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "customPageWebLinks": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "customTabs": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "flowDefinitions": {
+    "uniqueKeys": ["fullName"],
+    "equalKeys": ["fullName", "label", "flows"]
+  },
+  "prompts": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label", "description", "promptVersions"]
+  },
+  "quickActions": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label"]
+  },
+  "reportTypes": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "label", "description", "sections"]
+  },
+  "scontrols": {
+    "uniqueKeys": ["apexClass"],
+    "equalKeys": ["apexClass", "enabled"]
+  }
+}

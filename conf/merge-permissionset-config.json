@@ -1,0 +1,78 @@
+{
+  "applicationVisibilities": {
+    "uniqueKeys": ["application"],
+    "equalKeys": ["application", "visible"]
+  },
+  "classAccesses": {
+    "uniqueKeys": ["apexClass"],
+    "equalKeys": ["apexClass", "enabled"]
+  },
+  "customMetadataTypeAccesses": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "enabled"]
+  },
+  "customPermissions": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "enabled"]
+  },
+  "customSettingAccesses": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "enabled"]
+  },
+  "description": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "externalDataSourceAccesses": {
+    "uniqueKeys": ["externalDataSource"],
+    "equalKeys": ["externalDataSource", "enabled"]
+  },
+  "fieldPermissions": {
+    "uniqueKeys": ["field"],
+    "equalKeys": ["field", "editable", "readable"]
+  },
+  "hasActivationRequired": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "label": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "license": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "objectPermissions": {
+    "uniqueKeys": ["object"],
+    "equalKeys": [
+      "object",
+      "allowCreate",
+      "allowDelete",
+      "allowEdit",
+      "allowRead",
+      "modifyAllRecords",
+      "viewAllRecords"
+    ]
+  },
+  "pageAccesses": {
+    "uniqueKeys": ["apexPage"],
+    "equalKeys": ["apexPage", "enabled"]
+  },
+  "recordTypeVisibilities": {
+    "uniqueKeys": ["recordType"],
+    "equalKeys": ["recordType", "visible"]
+  },
+  "tabSettings": {
+    "uniqueKeys": ["tab"],
+    "equalKeys": ["tab", "visibility"]
+  },
+  "userLicense": {
+    "uniqueKeys": [],
+    "equalKeys": []
+  },
+  "userPermissions": {
+    "uniqueKeys": ["name"],
+    "equalKeys": ["name", "enabled"]
+  }
+}

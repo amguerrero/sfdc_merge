@@ -1,0 +1,6 @@
+{
+  "valueTranslation": {
+    "uniqueKeys": ["masterLabel"],
+    "equalKeys": ["masterLabel", "translation"]
+  }
+}
